@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e
+./etc/format.sh
+git add .
+
+

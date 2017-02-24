@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+     "jsx": "react"
+  },
+  "include": [
+        "src/client/app/**/*"
+  ],
+  "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+  ]
+}
