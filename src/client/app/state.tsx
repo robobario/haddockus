@@ -18,13 +18,13 @@ export class World {
     }
 
     private spawn_pc(event: e.SpawnPc) {
-        var pc = new a.Character(event.actor_id);
+        var pc = new a.Character(event.actor_id, this.grid);
         this.actors[event.actor_id] = pc;
         this.grid.add_actor(event.x, event.y, pc);
     }
 
     private place_wall(event: e.PlaceWall) {
-        var wall = new a.Wall(this.get_unique_actor_id());
+        var wall = new a.Wall(this.get_unique_actor_id(), this.grid);
         this.actors[wall.actor_id] = wall;
         this.grid.add_actor(event.x, event.y, wall);
     }
@@ -38,7 +38,6 @@ export class World {
     }
 
     apply_state_change(event: e.StateChangeEvent, tick: number): e.StateChangeEvent[] {
-        var reactions: e.StateChangeEvent[] = []
         switch (event.kind) {
             case "place-wall": this.place_wall(event); break;
             case "place-floor": this.grid.get(event.x, event.y).set_floor(true); break;
@@ -46,10 +45,26 @@ export class World {
             case "conscious-decision": this.queue_next_decision(event, tick); break;
             case "start-move": this.start_move(event, tick); break;
             case "finish-move": this.finish_move(event); break;
+            case "negate": this.negate(event); break;
+        }
+        return this.react(event, tick);
+    }
+
+    private negate(event:e.Negate) {
+        let negated = event.event_to_negate;
+        switch(negated.kind) {
+           case "finish-move" : this.grid.move(this.actor(negated.actor_id), e.opposite_direction(negated.direction))
+        }
+    }
+    
+    private react(event:e.StateChangeEvent, tick:number): e.StateChangeEvent[] {
+        let reactions: e.StateChangeEvent[] = [];
+        let actorIds = Object.keys(this.actors);
+        for (let id of actorIds) {
+            extend(reactions, this.actors[id].react(event, tick));
         }
         return reactions;
     }
-
 
     queue_next_decision(event: e.ConsciousDecision, tick: number) {
         this.queue_action(event.actor_id, new e.ConsciousDecision(event.actor_id), tick)

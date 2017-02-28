@@ -6,6 +6,16 @@ export const enum Direction {
     Left,
     Right
 }
+
+export function opposite_direction(d:Direction): Direction {
+    switch(d){
+      case Direction.Up: return Direction.Down;
+      case Direction.Down: return Direction.Up;
+      case Direction.Left: return Direction.Right;
+      case Direction.Right: return Direction.Left;
+    }
+}
+
 export class PlaceWall {
     readonly kind = "place-wall";
     readonly x: number;
@@ -42,6 +52,13 @@ export class ConsciousDecision {
         this.actor_id = actor_id;
     }
 }
+export class Negate {
+    readonly kind = "negate";
+    readonly event_to_negate: StateChangeEvent;
+    constructor(event_to_negate: StateChangeEvent) {
+        this.event_to_negate = event_to_negate;
+    }
+}
 export class RequestMove {
     readonly kind = "request-move";
     readonly actor_id: number;
@@ -70,4 +87,4 @@ export class FinishMove {
     }
 }
 export type InputEvent = PlaceWall | PlaceFloor | SpawnPc | RequestMove
-export type StateChangeEvent = PlaceWall | PlaceFloor | SpawnPc | ConsciousDecision | StartMove | FinishMove
+export type StateChangeEvent = PlaceWall | PlaceFloor | SpawnPc | ConsciousDecision | StartMove | FinishMove | Negate
