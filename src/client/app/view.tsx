@@ -21,8 +21,7 @@ export class View {
             for (var _y = 0; _y < grid.get_height(); _y++) {
                 var cell = grid.get(_x, _y);
                 if (cell.is_floor) {
-                    var info = this.sprites.get_sprite_named('floor_sand_stone2')
-                    this.context.drawImage(this.sprite, info.top_left_x, info.top_left_y, info.width, info.height, _x * 64, _y * 64, 64, 64);
+                    this.drawSprite(_x,_y, 'floor_sand_stone2');
                 }
                 var actors = cell.actors;
                 var actorIds = Object.keys(actors);
@@ -38,13 +37,16 @@ export class View {
     }
 
     renderHuman(x: number, y: number) {
-        var info = this.sprites.get_sprite_named('human_m')
-        this.context.drawImage(this.sprite, info.top_left_x, info.top_left_y, info.width, info.height, x * 64, y * 64, 64, 64);
+        this.drawSprite(x, y, 'human_m')
     }
 
     renderWall(x: number, y: number) {
-        var info = this.sprites.get_sprite_named('brick_dark0')
-        this.context.drawImage(this.sprite, info.top_left_x, info.top_left_y, info.width, info.height, x * 64, y * 64, 64, 64);
+        this.drawSprite(x, y, 'brick_dark0')
+    }
+
+    drawSprite(x: number, y: number, sprite: string) {
+        var info = this.sprites.get_sprite_named(sprite)
+        this.context.drawImage(this.sprite, info.top_left_x, info.top_left_y, info.width, info.height, x * 64, y * 64, 64, 64)
     }
 
 }
