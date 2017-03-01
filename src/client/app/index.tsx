@@ -7,18 +7,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
     view.load_sprite(function() {
         var engine = new Engine();
         var snap = engine.snapshot();
-        for (var _x = 0; _x < snap.get_width(); _x++) {
-            for (var _y = 0; _y < snap.get_height(); _y++) {
+        for (var _x = 0; _x < snap.width; _x++) {
+            for (var _y = 0; _y < snap.height; _y++) {
                 engine.act(new PlaceFloor(_x, _y));
             }
         }
-        for (var _x = 0; _x < snap.get_width(); _x++) {
+        for (var _x = 0; _x < snap.width; _x++) {
             engine.act(new PlaceWall(_x, 0));
-            engine.act(new PlaceWall(_x, snap.get_height() - 1));
+            engine.act(new PlaceWall(_x, snap.height - 1));
         }
-        for (var _y = 1; _y < snap.get_height() - 1; _y++) {
+        for (var _y = 1; _y < snap.height - 1; _y++) {
             engine.act(new PlaceWall(0, _y));
-            engine.act(new PlaceWall(snap.get_width() - 1, _y));
+            engine.act(new PlaceWall(snap.width - 1, _y));
         }
         var player_id = engine.get_unique_actor_id();
         engine.act(new SpawnPc(5, 5, player_id));

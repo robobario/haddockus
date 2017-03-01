@@ -6,12 +6,12 @@ import { World } from "./state.tsx"
 import { extend } from "./lang.tsx"
 
 export class Engine {
-    private input_events: e.InputEvent[] = [];
-    private events: e.StateChangeEvent[] = [];
+    private readonly input_events: e.InputEvent[] = [];
+    private readonly events: e.StateChangeEvent[] = [];
     private tick: number = 0;
     private processedOffset: number = 0;
-    private state_change_calculator = new StateChangeCalculator();
-    private world = new World();
+    private readonly state_change_calculator = new StateChangeCalculator();
+    private readonly world = new World();
 
     act(event: e.InputEvent) {
         this.input_events.push(event);

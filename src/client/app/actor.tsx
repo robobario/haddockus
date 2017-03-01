@@ -14,7 +14,7 @@ export class Action {
     }
 }
 
-export abstract class BaseActor {
+abstract class BaseActor {
     readonly actor_id: number;
     readonly random_num: number;
     readonly grid: Grid;
@@ -31,12 +31,8 @@ export abstract class BaseActor {
 
 export class Character extends BaseActor {
     readonly kind = "character";
-    actions: Action[] = [];
+    readonly actions: Action[] = [];
     readonly base_decision_interval: number = 500;
-
-    constructor(actor_id: number, grid: Grid) {
-        super(actor_id, grid);
-    }
 
     react(event: StateChangeEvent, tick: number): StateChangeEvent[] {
         return EMPTY;
@@ -45,10 +41,6 @@ export class Character extends BaseActor {
 
 export class Wall extends BaseActor {
     readonly kind = "wall";
-
-    constructor(actor_id: number, grid: Grid) {
-        super(actor_id, grid);
-    }
 
     react(event: StateChangeEvent, tick: number): StateChangeEvent[] {
         var reactions = [];

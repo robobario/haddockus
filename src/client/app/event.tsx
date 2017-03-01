@@ -16,6 +16,10 @@ export function opposite_direction(d: Direction): Direction {
     }
 }
 
+export type InputEvent = PlaceWall | PlaceFloor | SpawnPc | RequestMove
+
+export type StateChangeEvent = PlaceWall | PlaceFloor | SpawnPc | ConsciousDecision | StartMove | FinishMove | Negate
+
 export class PlaceWall {
     readonly kind = "place-wall";
     readonly x: number;
@@ -25,6 +29,7 @@ export class PlaceWall {
         this.y = y;
     }
 }
+
 export class PlaceFloor {
     readonly kind = "place-floor";
     readonly x: number;
@@ -34,6 +39,7 @@ export class PlaceFloor {
         this.y = y;
     }
 }
+
 export class SpawnPc {
     readonly kind = "spawn-pc";
     readonly x: number;
@@ -45,6 +51,7 @@ export class SpawnPc {
         this.actor_id = id;
     }
 }
+
 export class ConsciousDecision {
     readonly kind = "conscious-decision";
     readonly actor_id: number;
@@ -52,6 +59,7 @@ export class ConsciousDecision {
         this.actor_id = actor_id;
     }
 }
+
 export class Negate {
     readonly kind = "negate";
     readonly event_to_negate: StateChangeEvent;
@@ -59,6 +67,7 @@ export class Negate {
         this.event_to_negate = event_to_negate;
     }
 }
+
 export class RequestMove {
     readonly kind = "request-move";
     readonly actor_id: number;
@@ -68,6 +77,7 @@ export class RequestMove {
         this.direction = direction;
     }
 }
+
 export class StartMove {
     readonly kind = "start-move";
     readonly actor_id: number;
@@ -77,6 +87,7 @@ export class StartMove {
         this.direction = direction;
     }
 }
+
 export class FinishMove {
     readonly kind = "finish-move";
     readonly actor_id: number;
@@ -86,5 +97,4 @@ export class FinishMove {
         this.direction = direction;
     }
 }
-export type InputEvent = PlaceWall | PlaceFloor | SpawnPc | RequestMove
-export type StateChangeEvent = PlaceWall | PlaceFloor | SpawnPc | ConsciousDecision | StartMove | FinishMove | Negate
+

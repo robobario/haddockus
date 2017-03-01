@@ -2,12 +2,11 @@ import { Actor } from './actor.tsx';
 import { Direction } from './event.tsx';
 
 export class Cell {
-    is_wall: boolean = false;
     is_floor: boolean = false;
-    random_num: number = Math.floor(Math.random() * 100) + 1;
+    readonly random_num: number = Math.floor(Math.random() * 100) + 1;
     readonly x: number;
     readonly y: number;
-    actors: { [key: number]: Actor } = {};
+    readonly actors: { [key: number]: Actor } = {};
     constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
@@ -15,24 +14,20 @@ export class Cell {
     set_floor(is_floor: boolean) {
         this.is_floor = is_floor;
     }
-    set_wall(is_wall: boolean) {
-        this.is_wall = is_wall;
-    }
     add_actor(actor: Actor) {
         this.actors[actor.actor_id] = actor;
     }
-    is_occupied(): boolean {
-        return Object.keys(this.actors).length > 0;
-    }
-    remove(actor: Actor) {
-        delete this.actors[actor.actor_id];
+    remove(actor_id: number): Actor {
+        let actor = this.actors[actor_id];
+        delete this.actors[actor_id];
+        return actor;
     }
 }
 
 export class Grid {
     private grid: Cell[];
-    private width: number;
-    private height: number;
+    readonly width: number;
+    readonly height: number;
     private actors: { [key: number]: Cell } = {};
     constructor(width: number, height: number) {
         this.grid = [];
@@ -50,19 +45,13 @@ export class Grid {
     locate(actor_id: number): Cell {
         return this.actors[actor_id];
     }
-    get_width(): number {
-        return this.width;
-    }
-    get_height(): number {
-        return this.height;
-    }
     add_actor(x: number, y: number, actor: Actor) {
         var cell = this.get(x, y);
         cell.add_actor(actor);
         this.actors[actor.actor_id] = cell;
     }
-    move(actor: Actor, direction: Direction) {
-        var cell = this.actors[actor.actor_id];
+    move(actor_id: number, direction: Direction) {
+        var cell = this.actors[actor_id];
         var x = cell.x;
         var y = cell.y;
         switch (direction) {
@@ -71,7 +60,15 @@ export class Grid {
             case (Direction.Left): x -= 1; break;
             case (Direction.Right): x += 1; break;
         }
-        cell.remove(actor);
+        let actor = cell.remove(actor_id);
         this.add_actor(x, y, actor);
+    }
+
+    foreach(f: (x: number, y: number, cell: Cell) => any) {
+        for (let x = 0; x < this.width; x++) {
+            for (let y = 0; y < this.height; y++) {
+                f(x, y, this.get(x, y));
+            }
+        }
     }
 }
