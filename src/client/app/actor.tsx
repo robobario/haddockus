@@ -1,11 +1,8 @@
 import { StateChangeEvent, FinishMove, Negate } from './event.tsx'
 import { Grid } from './grid.tsx'
+import { extend } from './lang.tsx'
 
 const EMPTY: StateChangeEvent[] = [];
-
-function extend<T>(a: T[], b: T[]) {
-    a.push.apply(a, b);
-}
 
 export class Action {
     readonly event: StateChangeEvent;

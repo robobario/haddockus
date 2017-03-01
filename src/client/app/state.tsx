@@ -2,11 +2,7 @@ import { Grid, Cell } from "./grid.tsx"
 import * as e from "./event.tsx"
 import * as a from "./actor.tsx"
 import { StateChangeCalculator } from "./state_change_calculator.tsx"
-
-function extend<T>(a: T[], b: T[]) {
-    a.push.apply(a, b);
-}
-
+import { extend } from "./lang.tsx"
 
 export class World {
     private grid: Grid = new Grid(16, 16);

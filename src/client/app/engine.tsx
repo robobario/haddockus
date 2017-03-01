@@ -3,10 +3,7 @@ import * as e from "./event.tsx"
 import * as a from "./actor.tsx"
 import { StateChangeCalculator } from "./state_change_calculator.tsx"
 import { World } from "./state.tsx"
-
-function extend<T>(a: T[], b: T[]) {
-    a.push.apply(a, b);
-}
+import { extend } from "./lang.tsx"
 
 export class Engine {
     private input_events: e.InputEvent[] = [];

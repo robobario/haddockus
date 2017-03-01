@@ -1,8 +1,5 @@
 import * as e from "./event.tsx"
-
-function extend<T>(a: T[], b: T[]) {
-    a.push.apply(a, b);
-}
+import { extend } from "./lang.tsx"
 
 export class StateChangeCalculator {
     calculate_state_changes(input_events: e.InputEvent[]): e.StateChangeEvent[] {
