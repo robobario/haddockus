@@ -1,0 +1,5 @@
+{
+   "floor": ["floor_sand_stone0","floor_sand_stone1","floor_sand_stone2","floor_sand_stone3","floor_sand_stone4","floor_sand_stone5"],
+   "human": ["human_m", "human_f"],
+   "wall": ["brick_dark0", "brick_dark1","brick_dark2","brick_dark3","brick_dark4","brick_dark5","brick_dark6"]
+}

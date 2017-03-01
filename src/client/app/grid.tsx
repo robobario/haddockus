@@ -4,6 +4,7 @@ import { Direction } from './event.tsx';
 export class Cell {
     is_wall: boolean = false;
     is_floor: boolean = false;
+    random_num: number = Math.floor(Math.random() * 100) + 1;
     readonly x: number;
     readonly y: number;
     actors: { [key: number]: Actor } = {};

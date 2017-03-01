@@ -19,6 +19,7 @@ export class Action {
 
 export class Character {
     readonly actor_id: number;
+    readonly random_num: number;
     actions: Action[] = [];
     readonly grid: Grid; 
     readonly kind = "character";
@@ -26,6 +27,7 @@ export class Character {
     constructor(actor_id: number, grid:Grid) {
         this.actor_id = actor_id;
         this.grid = grid;
+        this.random_num = Math.floor(Math.random() * 100) + 1;
     }
     react(event: StateChangeEvent, tick:number): StateChangeEvent[] {
         return EMPTY;
@@ -34,11 +36,13 @@ export class Character {
 
 export class Wall {
     readonly actor_id: number;
+    readonly random_num: number;
     readonly grid: Grid; 
     readonly kind = "wall";
     constructor(actor_id: number, grid:Grid) {
         this.actor_id = actor_id;
         this.grid = grid;
+        this.random_num = Math.floor(Math.random() * 100) + 1;
     }
     react(event: StateChangeEvent, tick:number): StateChangeEvent[] {
         var reactions = [];
