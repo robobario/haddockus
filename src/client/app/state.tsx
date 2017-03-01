@@ -86,9 +86,10 @@ export class World {
 
     resolve_actions(tick: number): e.StateChangeEvent[] {
         let actions: e.StateChangeEvent[] = [];
+        let state = this;
         iteritems(this.actors, function(id, actor) {
             switch (actor.kind) {
-                case "character": extend(actions, this.resolve_actions_for_actor(actor, tick)); break;
+                case "character": extend(actions, state.resolve_actions_for_actor(actor, tick)); break;
             }
         });
         return actions
