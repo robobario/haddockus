@@ -7,12 +7,12 @@ export const enum Direction {
     Right
 }
 
-export function opposite_direction(d:Direction): Direction {
-    switch(d){
-      case Direction.Up: return Direction.Down;
-      case Direction.Down: return Direction.Up;
-      case Direction.Left: return Direction.Right;
-      case Direction.Right: return Direction.Left;
+export function opposite_direction(d: Direction): Direction {
+    switch (d) {
+        case Direction.Up: return Direction.Down;
+        case Direction.Down: return Direction.Up;
+        case Direction.Left: return Direction.Right;
+        case Direction.Right: return Direction.Left;
     }
 }
 

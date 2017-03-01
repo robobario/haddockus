@@ -50,14 +50,14 @@ export class World {
         return this.react(event, tick);
     }
 
-    private negate(event:e.Negate) {
+    private negate(event: e.Negate) {
         let negated = event.event_to_negate;
-        switch(negated.kind) {
-           case "finish-move" : this.grid.move(this.actor(negated.actor_id), e.opposite_direction(negated.direction))
+        switch (negated.kind) {
+            case "finish-move": this.grid.move(this.actor(negated.actor_id), e.opposite_direction(negated.direction))
         }
     }
-    
-    private react(event:e.StateChangeEvent, tick:number): e.StateChangeEvent[] {
+
+    private react(event: e.StateChangeEvent, tick: number): e.StateChangeEvent[] {
         let reactions: e.StateChangeEvent[] = [];
         let actorIds = Object.keys(this.actors);
         for (let id of actorIds) {

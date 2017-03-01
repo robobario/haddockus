@@ -47,7 +47,7 @@ export class Grid {
     get(x: number, y: number): Cell {
         return this.grid[x + y * this.width];
     }
-    locate(actor_id:number) : Cell {
+    locate(actor_id: number): Cell {
         return this.actors[actor_id];
     }
     get_width(): number {

@@ -17,46 +17,56 @@ export class Action {
     }
 }
 
-export class Character {
+export abstract class BaseActor {
     readonly actor_id: number;
     readonly random_num: number;
-    actions: Action[] = [];
-    readonly grid: Grid; 
-    readonly kind = "character";
-    readonly base_decision_interval: number = 500;
-    constructor(actor_id: number, grid:Grid) {
+    readonly grid: Grid;
+    abstract readonly kind: string;
+
+    constructor(actor_id: number, grid: Grid) {
         this.actor_id = actor_id;
         this.grid = grid;
         this.random_num = Math.floor(Math.random() * 100) + 1;
     }
-    react(event: StateChangeEvent, tick:number): StateChangeEvent[] {
+
+    abstract react(event: StateChangeEvent, tick: number): StateChangeEvent[];
+}
+
+export class Character extends BaseActor {
+    readonly kind = "character";
+    actions: Action[] = [];
+    readonly base_decision_interval: number = 500;
+
+    constructor(actor_id: number, grid: Grid) {
+        super(actor_id, grid);
+    }
+
+    react(event: StateChangeEvent, tick: number): StateChangeEvent[] {
         return EMPTY;
     }
 }
 
-export class Wall {
-    readonly actor_id: number;
-    readonly random_num: number;
-    readonly grid: Grid; 
+export class Wall extends BaseActor {
     readonly kind = "wall";
-    constructor(actor_id: number, grid:Grid) {
-        this.actor_id = actor_id;
-        this.grid = grid;
-        this.random_num = Math.floor(Math.random() * 100) + 1;
+
+    constructor(actor_id: number, grid: Grid) {
+        super(actor_id, grid);
     }
-    react(event: StateChangeEvent, tick:number): StateChangeEvent[] {
+
+    react(event: StateChangeEvent, tick: number): StateChangeEvent[] {
         var reactions = [];
-        switch(event.kind) {
-           case "finish-move" : extend(reactions, this.negate_movement_into_wall(event)); break;
+        switch (event.kind) {
+            case "finish-move": extend(reactions, this.negate_movement_into_wall(event)); break;
         }
         return reactions;
     }
+
     negate_movement_into_wall(event: FinishMove) {
-      if(this.grid.locate(this.actor_id) === this.grid.locate(event.actor_id)){
-        return [new Negate(event)];
-      }else{
-        return EMPTY;
-      }
+        if (this.grid.locate(this.actor_id) === this.grid.locate(event.actor_id)) {
+            return [new Negate(event)];
+        } else {
+            return EMPTY;
+        }
     }
 }
 

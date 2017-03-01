@@ -23,7 +23,7 @@ export class View {
             for (var _y = 0; _y < grid.get_height(); _y++) {
                 var cell = grid.get(_x, _y);
                 if (cell.is_floor) {
-                    this.drawSprite(_x,_y, this.get_floor_sprite('floor', cell));
+                    this.drawSprite(_x, _y, this.get_floor_sprite('floor', cell));
                 }
                 var actors = cell.actors;
                 var actorIds = Object.keys(actors);
@@ -51,12 +51,12 @@ export class View {
         this.context.drawImage(this.sprite, info.top_left_x, info.top_left_y, info.width, info.height, x * 64, y * 64, 64, 64)
     }
 
-    get_sprite_name(alias:string, actor:Actor): string {
+    get_sprite_name(alias: string, actor: Actor): string {
         let alts = this.alternatives[alias];
         return alts[actor.random_num % alts.length]
     }
 
-    get_floor_sprite(alias:string, cell:Cell): string {
+    get_floor_sprite(alias: string, cell: Cell): string {
         let alts = this.alternatives[alias];
         return alts[cell.random_num % alts.length]
     }
