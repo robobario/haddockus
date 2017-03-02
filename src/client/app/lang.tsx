@@ -7,6 +7,14 @@ export function iteritems<T>(a: { [key: number]: T }, f: (key: string, value: T)
         var value = a[key];
         f(key, value);
     }
+}
 
+export function flatmap<T, S>(a: { [key: number]: T }, f: (key: string, value: T) => S[]): S[] {
+    let collector: S[] = [];
+    for (let key of Object.keys(a)) {
+        var value = a[key];
+        extend(collector, f(key, value));
+    }
+    return collector;
 }
 

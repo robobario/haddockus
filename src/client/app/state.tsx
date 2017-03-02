@@ -2,7 +2,7 @@ import { Grid, Cell } from "./grid.tsx"
 import * as e from "./event.tsx"
 import * as a from "./actor.tsx"
 import { StateChangeCalculator } from "./state_change_calculator.tsx"
-import { extend, iteritems } from "./lang.tsx"
+import { extend, iteritems, flatmap } from "./lang.tsx"
 
 export class World {
     private grid: Grid = new Grid(16, 16);
@@ -57,11 +57,9 @@ export class World {
     }
 
     private react(event: e.StateChangeEvent, tick: number): e.StateChangeEvent[] {
-        let reactions: e.StateChangeEvent[] = [];
-        iteritems(this.actors, function(id, actor) {
-            extend(reactions, actor.react(event, tick));
-        })
-        return reactions;
+        return flatmap(this.actors, (id, actor) => {
+            return actor.react(event, tick);
+        });
     }
 
     queue_next_decision(event: e.ConsciousDecision, tick: number) {
@@ -79,39 +77,18 @@ export class World {
     queue_action(actor_id: number, trigger_event: e.StateChangeEvent, tick: number) {
         let actor = this.actor(actor_id);
         switch (actor.kind) {
-            case "character": actor.actions.push(new a.Action(trigger_event, tick)); break;
+            case "character": actor.queue_action(trigger_event, tick); break;
             default: throw new Error('tried to queue action for non character action');
         }
     }
 
     resolve_actions(tick: number): e.StateChangeEvent[] {
-        let actions: e.StateChangeEvent[] = [];
-        let state = this;
-        iteritems(this.actors, function(id, actor) {
+        return flatmap(this.actors, (key, actor) => {
             switch (actor.kind) {
-                case "character": extend(actions, state.resolve_actions_for_actor(actor, tick)); break;
+                case "character": return actor.resolve_actions(tick);
+                default: return [];
             }
-        });
-        return actions
-    }
-
-
-    resolve_actions_for_actor(actor: a.Character, tick: number): e.StateChangeEvent[] {
-        let actions: e.StateChangeEvent[] = [];
-        for (let i = actor.actions.length - 1; i >= 0; i--) {
-            let action = actor.actions[i];
-            switch (action.event.kind) {
-                case "conscious-decision": if (tick - action.start_tick >= actor.base_decision_interval) {
-                    actions.push(new e.ConsciousDecision(actor.actor_id));
-                    actor.actions.splice(i, 1);
-                }; break;
-                case "start-move": if (tick - action.start_tick >= 500) {
-                    actions.push(new e.FinishMove(actor.actor_id, action.event.direction));
-                    actor.actions.splice(i, 1);
-                }; break;
-            }
-        }
-        return actions;
+        })
     }
 
 }

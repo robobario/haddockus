@@ -20,15 +20,14 @@ export class View {
     }
 
     render(grid: Grid) {
-        let view = this;
-        grid.foreach(function(x, y, cell) {
+        grid.foreach((x, y, cell) => {
             if (cell.is_floor) {
-                view.draw_sprite(x, y, view.get_floor_sprite('floor', cell));
+                this.draw_sprite(x, y, this.get_floor_sprite('floor', cell));
             }
-            iteritems(cell.actors, function(key, actor) {
+            iteritems(cell.actors, (key, actor) => {
                 switch (actor.kind) {
-                    case "character": view.render_human(x, y, actor); break;
-                    case "wall": view.render_wall(x, y, actor); break;
+                    case "character": this.render_human(x, y, actor); break;
+                    case "wall": this.render_wall(x, y, actor); break;
                 }
             });
         })
