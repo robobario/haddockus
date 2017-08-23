@@ -33,8 +33,8 @@ export class Grid {
         this.grid = [];
         this.width = width;
         this.height = height;
-        for (var _i = 0; _i < width; _i++) {
-            for (var _j = 0; _j < height; _j++) {
+        for (let _i = 0; _i < width; _i++) {
+            for (let _j = 0; _j < height; _j++) {
                 this.grid[_i + width * _j] = new Cell(_i, _j);
             }
         }
@@ -46,14 +46,14 @@ export class Grid {
         return this.actors[actor_id];
     }
     add_actor(x: number, y: number, actor: Actor) {
-        var cell = this.get(x, y);
+        let cell = this.get(x, y);
         cell.add_actor(actor);
         this.actors[actor.actor_id] = cell;
     }
     move(actor_id: number, direction: Direction) {
-        var cell = this.actors[actor_id];
-        var x = cell.x;
-        var y = cell.y;
+        let cell = this.actors[actor_id];
+        let x = cell.x;
+        let y = cell.y;
         switch (direction) {
             case (Direction.Up): y -= 1; break;
             case (Direction.Down): y += 1; break;

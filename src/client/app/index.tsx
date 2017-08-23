@@ -2,30 +2,30 @@ import { Engine } from "./engine.tsx";
 import { PlaceFloor, SpawnPc, RequestMove, Direction, PlaceWall } from "./event.tsx"
 import { View } from "./view.tsx"
 
-var view = new View();
+const view = new View();
 document.addEventListener("DOMContentLoaded", function(event) {
     view.load_sprite(function() {
-        var engine = new Engine();
-        var snap = engine.snapshot();
-        for (var _x = 0; _x < snap.width; _x++) {
-            for (var _y = 0; _y < snap.height; _y++) {
+        const engine = new Engine();
+        let snap = engine.snapshot();
+        for (let _x = 0; _x < snap.width; _x++) {
+            for (let _y = 0; _y < snap.height; _y++) {
                 engine.act(new PlaceFloor(_x, _y));
             }
         }
-        for (var _x = 0; _x < snap.width; _x++) {
+        for (let _x = 0; _x < snap.width; _x++) {
             engine.act(new PlaceWall(_x, 0));
             engine.act(new PlaceWall(_x, snap.height - 1));
         }
-        for (var _y = 1; _y < snap.height - 1; _y++) {
+        for (let _y = 1; _y < snap.height - 1; _y++) {
             engine.act(new PlaceWall(0, _y));
             engine.act(new PlaceWall(snap.width - 1, _y));
         }
-        var player_id = engine.get_unique_actor_id();
+        let player_id = engine.get_unique_actor_id();
         engine.act(new SpawnPc(5, 5, player_id));
         engine.process_events();
         snap = engine.snapshot();
         view.render(snap);
-        console.log("make a decision now!")
+        console.log("make a decision now!");
         document.addEventListener("keydown", function(e) {
             switch (e.keyCode) {
                 case 38: engine.act(new RequestMove(player_id, Direction.Up)); break;

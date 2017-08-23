@@ -50,11 +50,11 @@ export class Character extends BaseActor {
                 case "conscious-decision": if (tick - action.start_tick >= this.base_decision_interval) {
                     actions.push(new ConsciousDecision(this.actor_id));
                     this.actions.splice(i, 1);
-                }; break;
+                } break;
                 case "start-move": if (tick - action.start_tick >= 500) {
                     actions.push(new FinishMove(this.actor_id, action.event.direction));
                     this.actions.splice(i, 1);
-                }; break;
+                } break;
             }
         }
         return actions;
@@ -65,7 +65,7 @@ export class Wall extends BaseActor {
     readonly kind = "wall";
 
     react(event: StateChangeEvent, tick: number): StateChangeEvent[] {
-        var reactions = [];
+        const reactions = [];
         switch (event.kind) {
             case "finish-move": extend(reactions, this.negate_movement_into_wall(event)); break;
         }

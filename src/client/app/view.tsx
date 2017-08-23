@@ -42,8 +42,8 @@ export class View {
     }
 
     draw_sprite(x: number, y: number, sprite: string) {
-        var info = this.sprites.get_sprite_named(sprite)
-        this.context.drawImage(this.sprite, info.top_left_x, info.top_left_y, info.width, info.height, x * 64, y * 64, 64, 64)
+        const info = this.sprites.get_sprite_named(sprite);
+        this.context.drawImage(this.sprite, info.top_left_x, info.top_left_y, info.width, info.height, x * 64, y * 64, 64, 64);
     }
 
     get_sprite_name(alias: string, actor: Actor): string {

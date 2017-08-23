@@ -19,7 +19,7 @@ export class Sprites {
 
     constructor() {
         for (let frame of sprite_data['frames']) {
-            var f = frame.frame
+            const f = frame.frame;
             this.sprites[frame.filename] = new Sprite(-f.x, -f.y, f.w, f.h)
         }
     }

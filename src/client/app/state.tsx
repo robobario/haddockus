@@ -19,12 +19,12 @@ export class World {
     }
 
     private spawn_pc(event: e.SpawnPc) {
-        var pc = new a.Character(event.actor_id, this.grid);
+        const pc = new a.Character(event.actor_id, this.grid);
         this.add_actor(pc, event.x, event.y);
     }
 
     private place_wall(event: e.PlaceWall) {
-        var wall = new a.Wall(this.get_unique_actor_id(), this.grid);
+        const wall = new a.Wall(this.get_unique_actor_id(), this.grid);
         this.add_actor(wall, event.x, event.y);
     }
 

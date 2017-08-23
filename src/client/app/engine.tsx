@@ -27,7 +27,7 @@ export class Engine {
     }
 
     run() {
-        var interrupt_pc = false;
+        let interrupt_pc = false;
         while (interrupt_pc == false) {
             extend(this.events, this.world.resolve_actions(this.tick));
             interrupt_pc = this.process_events();
@@ -38,9 +38,9 @@ export class Engine {
     }
 
     process_events() {
-        var interrupt_pc = false;
+        let interrupt_pc = false;
         while (this.processedOffset < this.events.length) {
-            var event: e.StateChangeEvent = this.events[this.processedOffset];
+            const event: e.StateChangeEvent = this.events[this.processedOffset];
             switch (event.kind) {
                 case "conscious-decision": interrupt_pc = true;
                 default: extend(this.events, this.world.apply_state_change(event, this.tick));
