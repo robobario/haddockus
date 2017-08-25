@@ -1,5 +1,5 @@
 import { Grid, Cell } from "./grid"
-import { Actor } from "./actor"
+import { Actor, Character } from "./actor"
 import { Sprites } from "./sprites"
 import { iteritems } from "./lang"
 
@@ -33,8 +33,14 @@ export class View {
         })
     }
 
-    render_human(x: number, y: number, actor: Actor) {
-        this.draw_sprite(x, y, this.get_sprite_name('human', actor))
+    render_human(x: number, y: number, actor: Character) {
+        let spriteName: string;
+        if (actor.is_alive()) {
+            spriteName = this.get_sprite_name('human', actor);
+        } else {
+            spriteName = 'corpse';
+        }
+        this.draw_sprite(x, y, spriteName)
     }
 
     render_wall(x: number, y: number, actor: Actor) {
