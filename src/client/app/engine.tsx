@@ -1,9 +1,9 @@
-import { Grid, Cell } from "./grid.tsx"
-import * as e from "./event.tsx"
-import * as a from "./actor.tsx"
-import { StateChangeCalculator } from "./state_change_calculator.tsx"
-import { World } from "./state.tsx"
-import { extend } from "./lang.tsx"
+import { Grid, Cell } from "./grid"
+import * as e from "./event"
+import * as a from "./actor"
+import { StateChangeCalculator } from "./state_change_calculator"
+import { World } from "./state"
+import { extend } from "./lang"
 
 export class Engine {
     private readonly input_events: e.InputEvent[] = [];
@@ -15,7 +15,7 @@ export class Engine {
 
     act(event: e.InputEvent) {
         this.input_events.push(event);
-        extend(this.events, this.state_change_calculator.calculate_state_changes([event]));
+        extend(this.events, StateChangeCalculator.calculate_state_changes([event]));
     }
 
     snapshot() {

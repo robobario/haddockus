@@ -1,16 +1,16 @@
-import { Grid, Cell } from "./grid.tsx"
-import { Actor } from "./actor.tsx"
-import { Sprites } from "./sprites.tsx"
-import { iteritems } from "./lang.tsx"
+import { Grid, Cell } from "./grid"
+import { Actor } from "./actor"
+import { Sprites } from "./sprites"
+import { iteritems } from "./lang"
 
 export class View {
     private sprites: Sprites = new Sprites();
-    private alternatives = require('./sprite-alternatives.json');
+    private alternatives: any = require('./sprite-alternatives.json');
     private canvas: any = document.getElementById("canvas");
     private context = this.canvas.getContext("2d");
     private sprite = new Image();
 
-    load_sprite(callback) {
+    load_sprite(callback: () => void) {
         this.sprite.src = String(require('./sprites.png'));
         if (this.sprite.complete) {
             callback();
@@ -24,7 +24,7 @@ export class View {
             if (cell.is_floor) {
                 this.draw_sprite(x, y, this.get_floor_sprite('floor', cell));
             }
-            iteritems(cell.actors, (key, actor) => {
+            iteritems(cell.actors, (key: string, actor: Actor) => {
                 switch (actor.kind) {
                     case "character": this.render_human(x, y, actor); break;
                     case "wall": this.render_wall(x, y, actor); break;

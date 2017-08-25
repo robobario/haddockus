@@ -1,6 +1,6 @@
-import { Engine } from "./engine.tsx";
-import { PlaceFloor, SpawnPc, RequestMove, Direction, PlaceWall } from "./event.tsx"
-import { View } from "./view.tsx"
+import { Engine } from "./engine";
+import { PlaceFloor, SpawnPc, RequestMove, Direction, PlaceWall, SpawnMonster } from "./event"
+import { View } from "./view"
 
 const view = new View();
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         }
         let player_id = engine.get_unique_actor_id();
         engine.act(new SpawnPc(5, 5, player_id));
+        engine.act(new SpawnMonster(8, 3, engine.get_unique_actor_id()));
         engine.process_events();
         snap = engine.snapshot();
         view.render(snap);

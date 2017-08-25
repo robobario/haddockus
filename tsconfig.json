@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-     "jsx": "react"
+     "jsx": "react",
+     "strictNullChecks": true,
+     "noImplicitAny": true,
+     "noImplicitThis": true,
+     "alwaysStrict": true
   },
   "include": [
         "src/client/app/**/*"

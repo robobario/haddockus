@@ -1,4 +1,4 @@
-var sprite_data = require('./sprites.json')
+const sprite_data: any = require('./sprites.json');
 
 export class Sprite {
     readonly top_left_x: number;

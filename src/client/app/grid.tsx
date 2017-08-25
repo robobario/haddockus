@@ -1,12 +1,12 @@
-import { Actor } from './actor.tsx';
-import { Direction } from './event.tsx';
+import { Actor } from './actor';
+import { Direction } from './event';
 
 export class Cell {
     is_floor: boolean = false;
     readonly random_num: number = Math.floor(Math.random() * 100) + 1;
     readonly x: number;
     readonly y: number;
-    readonly actors: { [key: number]: Actor } = {};
+    readonly actors: { [key: string]: Actor } = {};
     constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
@@ -17,7 +17,7 @@ export class Cell {
     add_actor(actor: Actor) {
         this.actors[actor.actor_id] = actor;
     }
-    remove(actor_id: number): Actor {
+    remove(actor_id: string): Actor {
         let actor = this.actors[actor_id];
         delete this.actors[actor_id];
         return actor;
@@ -28,7 +28,7 @@ export class Grid {
     private grid: Cell[];
     readonly width: number;
     readonly height: number;
-    private actors: { [key: number]: Cell } = {};
+    private actors: { [key: string]: Cell } = {};
     constructor(width: number, height: number) {
         this.grid = [];
         this.width = width;
@@ -42,7 +42,7 @@ export class Grid {
     get(x: number, y: number): Cell {
         return this.grid[x + y * this.width];
     }
-    locate(actor_id: number): Cell {
+    locate(actor_id: string): Cell {
         return this.actors[actor_id];
     }
     add_actor(x: number, y: number, actor: Actor) {
@@ -50,7 +50,7 @@ export class Grid {
         cell.add_actor(actor);
         this.actors[actor.actor_id] = cell;
     }
-    move(actor_id: number, direction: Direction) {
+    move(actor_id: string, direction: Direction) {
         let cell = this.actors[actor_id];
         let x = cell.x;
         let y = cell.y;

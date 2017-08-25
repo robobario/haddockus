@@ -1,21 +1,28 @@
-import { Grid, Cell } from "./grid.tsx"
-import * as e from "./event.tsx"
-import * as a from "./actor.tsx"
-import { StateChangeCalculator } from "./state_change_calculator.tsx"
-import { extend, iteritems, flatmap } from "./lang.tsx"
+import { Grid, Cell } from "./grid"
+import * as e from "./event"
+import * as a from "./actor"
+import { StateChangeCalculator } from "./state_change_calculator"
+import { extend, iteritems, flatmap } from "./lang"
+import { Direction } from "./event";
+import { Actor } from "./actor";
 
 export class World {
     private grid: Grid = new Grid(16, 16);
-    private actors: { [key: number]: a.Actor } = {};
+    private actors: { [key: string]: a.Actor } = {};
     private id_sequence: number = 0;
 
-    private actor(id: number) {
+    private actor(id: string) {
         return this.actors[id];
     }
 
     private add_actor(actor: a.Actor, x: number, y: number) {
         this.actors[actor.actor_id] = actor;
         this.grid.add_actor(x, y, actor);
+    }
+
+    private spawn_monster(event: e.SpawnMonster) {
+        const monster = new a.Character(event.actor_id, this.grid);
+        this.add_actor(monster, event.x, event.y);
     }
 
     private spawn_pc(event: e.SpawnPc) {
@@ -29,7 +36,7 @@ export class World {
     }
 
     get_unique_actor_id() {
-        return ++this.id_sequence;
+        return String(++this.id_sequence);
     }
 
     snapshot() {
@@ -41,7 +48,9 @@ export class World {
             case "place-wall": this.place_wall(event); break;
             case "place-floor": this.grid.get(event.x, event.y).set_floor(true); break;
             case "spawn-pc": this.spawn_pc(event); break;
+            case "spawn-monster": this.spawn_monster(event); break;
             case "conscious-decision": this.queue_next_decision(event, tick); break;
+            case "npc-decision": this.queue_monster_decision(event, tick); break;
             case "start-move": this.start_move(event, tick); break;
             case "finish-move": this.finish_move(event); break;
             case "negate": this.negate(event); break;
@@ -57,9 +66,14 @@ export class World {
     }
 
     private react(event: e.StateChangeEvent, tick: number): e.StateChangeEvent[] {
-        return flatmap(this.actors, (id, actor) => {
+        return flatmap(this.actors, (id: string, actor: Actor) => {
             return actor.react(event, tick);
         });
+    }
+
+    queue_monster_decision(event: e.NpcDecision, tick: number) {
+        this.queue_action(event.actor_id, new e.StartMove(event.actor_id, Direction.Left), tick);
+        this.queue_action(event.actor_id, new e.NpcDecision(event.actor_id), tick)
     }
 
     queue_next_decision(event: e.ConsciousDecision, tick: number) {
@@ -74,7 +88,7 @@ export class World {
         this.grid.move(move.actor_id, move.direction);
     }
 
-    queue_action(actor_id: number, trigger_event: e.StateChangeEvent, tick: number) {
+    queue_action(actor_id: string, trigger_event: e.StateChangeEvent, tick: number) {
         let actor = this.actor(actor_id);
         switch (actor.kind) {
             case "character": actor.queue_action(trigger_event, tick); break;
@@ -83,7 +97,7 @@ export class World {
     }
 
     resolve_actions(tick: number): e.StateChangeEvent[] {
-        return flatmap(this.actors, (key, actor) => {
+        return flatmap(this.actors, (key: string, actor: Actor) => {
             switch (actor.kind) {
                 case "character": return actor.resolve_actions(tick);
                 default: return [];
