@@ -36,7 +36,7 @@ abstract class BaseActor {
 export class Character extends BaseActor {
     readonly kind = "character";
     private actions: Action[] = [];
-    readonly base_decision_interval: number = 500;
+    readonly base_decision_interval: number = 16;
     private hp: number = 50;
     private alive: boolean = true;
 
@@ -118,7 +118,7 @@ export class Character extends BaseActor {
                     actions.push(new ConsciousDecision(this.actor_id));
                     this.actions.splice(i, 1);
                 } break;
-                case "start-move": if (tick - action.start_tick >= 500) {
+                case "start-move": if (tick - action.start_tick >= 16) {
                     actions.push(new FinishMove(this.actor_id, action.event.direction));
                     this.actions.splice(i, 1);
                 } break;
