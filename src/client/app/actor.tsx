@@ -78,7 +78,7 @@ export class Character extends BaseActor {
             return EMPTY
         }
         this.hp = this.hp - event.damage;
-        if (this.hp < 0) {
+        if (this.hp <= 0) {
             return [new Death(this.actor_id)]
         }
         return EMPTY;
