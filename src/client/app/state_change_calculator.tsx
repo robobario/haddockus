@@ -11,6 +11,7 @@ export class StateChangeCalculator {
                 case "spawn-pc": extend(state_changes, StateChangeCalculator.spawn_pc(event)); break;
                 case "spawn-monster": extend(state_changes, StateChangeCalculator.spawn_monster(event)); break;
                 case "request-move": state_changes.push(new e.StartMove(event.actor_id, event.direction)); break;
+                case "request-wait": state_changes.push(new e.StartWait(event.actor_id)); break;
             }
         }
         return state_changes;

@@ -4,6 +4,7 @@ import * as a from "./actor"
 import { StateChangeCalculator } from "./state_change_calculator"
 import { World } from "./state"
 import { extend } from "./lang"
+import { StateChangeEvent } from "./event";
 
 export class Engine {
     private readonly input_events: e.InputEvent[] = [];
@@ -44,10 +45,17 @@ export class Engine {
             console.log(event.kind);
             switch (event.kind) {
                 case "conscious-decision": interrupt_pc = true;
-                default: extend(this.events, this.world.apply_state_change(event, this.tick));
+                default: this.apply_state_change(event);
             }
             this.processedOffset += 1;
         }
         return interrupt_pc;
+    }
+
+    private apply_state_change(event: StateChangeEvent) {
+        let reactions = this.world.apply_state_change(event, this.tick);
+        if (reactions.length > 0) {
+            this.events.splice(this.processedOffset + 1, 0, ...reactions);
+        }
     }
 }

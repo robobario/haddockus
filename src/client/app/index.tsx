@@ -1,5 +1,5 @@
 import { Engine } from "./engine";
-import { PlaceFloor, SpawnPc, RequestMove, Direction, PlaceWall, SpawnMonster } from "./event"
+import { PlaceFloor, SpawnPc, RequestMove, Direction, PlaceWall, SpawnMonster, RequestWait } from "./event"
 import { View } from "./view"
 
 const view = new View();
@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 case 40: engine.act(new RequestMove(player_id, Direction.Down)); break;
                 case 37: engine.act(new RequestMove(player_id, Direction.Left)); break;
                 case 39: engine.act(new RequestMove(player_id, Direction.Right)); break;
+                case 190: engine.act(new RequestWait(player_id)); break;
                 default: return;
             }
             engine.run();

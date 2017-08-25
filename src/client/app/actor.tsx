@@ -1,7 +1,7 @@
 import {
     StateChangeEvent, FinishMove, Negate, ConsciousDecision, NpcDecision, InitiateCombat, Melee,
     Damage,
-    Death, ActorEvent, OneWayInteraction,
+    Death, ActorEvent, OneWayInteraction, FinishWait,
 } from './event'
 import { extend } from './lang'
 import { Grid } from "./grid";
@@ -120,6 +120,10 @@ export class Character extends BaseActor {
                 } break;
                 case "start-move": if (tick - action.start_tick >= 16) {
                     actions.push(new FinishMove(this.actor_id, action.event.direction));
+                    this.actions.splice(i, 1);
+                } break;
+                case "start-wait": if (tick - action.start_tick >= 16) {
+                    actions.push(new FinishWait(this.actor_id));
                     this.actions.splice(i, 1);
                 } break;
             }

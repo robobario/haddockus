@@ -16,9 +16,9 @@ export function opposite_direction(d: Direction): Direction {
     }
 }
 
-export type InputEvent = PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | RequestMove
+export type InputEvent = PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | RequestMove | RequestWait
 
-export type StateChangeEvent = PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | ConsciousDecision | NpcDecision | StartMove | FinishMove | Negate | InitiateCombat | Melee | Damage | Death
+export type StateChangeEvent = PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | ConsciousDecision | NpcDecision | StartMove | FinishMove | Negate | InitiateCombat | Melee | Damage | Death | StartWait | FinishWait
 
 export abstract class OneWayInteraction {
     readonly from_actor_id: string;
@@ -120,6 +120,10 @@ export class Negate {
     }
 }
 
+export class RequestWait extends ActorEvent {
+    readonly kind = "request-wait";
+}
+
 export class RequestMove extends ActorEvent {
     readonly kind = "request-move";
     readonly direction: Direction;
@@ -127,6 +131,14 @@ export class RequestMove extends ActorEvent {
         super(actor_id);
         this.direction = direction;
     }
+}
+
+export class StartWait extends ActorEvent {
+    readonly kind = "start-wait";
+}
+
+export class FinishWait extends ActorEvent {
+    readonly kind = "finish-wait";
 }
 
 export class StartMove extends ActorEvent {
