@@ -1,7 +1,7 @@
 import {
     StateChangeEvent, FinishMove, Negate, ConsciousDecision, NpcDecision, InitiateCombat, Melee,
     Damage,
-    Death,
+    Death, ActorEvent, OneWayInteraction,
 } from './event'
 import { extend } from './lang'
 import { Grid } from "./grid";
@@ -51,23 +51,30 @@ export class Character extends BaseActor {
         const reactions: StateChangeEvent[] = [];
         switch (event.kind) {
             case "finish-move": extend(reactions, negate_movement_and_initiate_combat(event, this)); break;
-            case "initiate-combat": extend(reactions, this.melee(event)); break;
+            case "initiate-combat": extend(reactions, this.resolve_initiate_combat(event)); break;
             case "melee": extend(reactions, this.resolve_incoming_melee(event)); break;
-            case "damage": extend(reactions, this.resolve_damage(event)); break
-            case "death": extend(reactions, this.resolve_death(event)); break
+            case "damage": extend(reactions, this.resolve_damage(event)); break;
+            case "death": extend(reactions, this.resolve_death(event)); break;
         }
         return reactions;
     }
 
     private resolve_death(event: Death): StateChangeEvent[] {
-        if (event.actor_id === this.actor_id) {
+        if (this.is_target_me(event)) {
             this.alive = false;
         }
         return EMPTY;
     }
 
+    private is_target_me(event: ActorEvent) {
+        return event.actor_id === this.actor_id;
+    }
+    private is_one_way_target(event: OneWayInteraction) {
+        return event.to_actor_id === this.actor_id;
+    }
+
     private resolve_damage(event: Damage): StateChangeEvent[] {
-        if (event.actor_id !== this.actor_id) {
+        if (!this.is_target_me(event)) {
             return EMPTY
         }
         this.hp = this.hp - event.damage;
@@ -77,15 +84,15 @@ export class Character extends BaseActor {
         return EMPTY;
     }
 
-    private melee(initiation: InitiateCombat): StateChangeEvent[] {
-        if (initiation.to_actor_id !== this.actor_id) {
+    private resolve_initiate_combat(initiation: InitiateCombat): StateChangeEvent[] {
+        if (!this.is_one_way_target(initiation)) {
             return EMPTY
         }
         return [new Melee(this.actor_id, initiation.from_actor_id, 5)];
     }
 
     private resolve_incoming_melee(event: Melee): StateChangeEvent[] {
-        if (event.to_actor_id !== this.actor_id) {
+        if (!this.is_one_way_target(event)) {
             return EMPTY
         }
         return [new Damage(this.actor_id, event.damage)];

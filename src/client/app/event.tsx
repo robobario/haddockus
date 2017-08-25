@@ -20,7 +20,7 @@ export type InputEvent = PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | Reque
 
 export type StateChangeEvent = PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | ConsciousDecision | NpcDecision | StartMove | FinishMove | Negate | InitiateCombat | Melee | Damage | Death
 
-abstract class OneWayInteraction {
+export abstract class OneWayInteraction {
     readonly from_actor_id: string;
     readonly to_actor_id: string;
     constructor(from_actor_id: string, to_actor_id: string) {
@@ -29,7 +29,7 @@ abstract class OneWayInteraction {
     }
 }
 
-abstract class ActorEvent {
+export abstract class ActorEvent {
     readonly actor_id: string;
     constructor(actor_id: string) {
         this.actor_id = actor_id;
