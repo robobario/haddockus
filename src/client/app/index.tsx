@@ -21,19 +21,19 @@ document.addEventListener("DOMContentLoaded", function(event) {
             engine.act(new PlaceWall(snap.width - 1, _y));
         }
         let player_id = engine.get_unique_actor_id();
-        engine.act(new SpawnPc(5, 5, player_id));
-        engine.act(new SpawnMonster(8, 3, engine.get_unique_actor_id()));
+        engine.act(new SpawnPc(engine.current_tick(), 5, 5, player_id));
+        engine.act(new SpawnMonster(engine.current_tick(), 8, 3, engine.get_unique_actor_id()));
         engine.process_events();
         snap = engine.snapshot();
         view.render(snap);
         console.log("make a decision now!");
         document.addEventListener("keydown", function(e) {
             switch (e.keyCode) {
-                case 38: engine.act(new RequestMove(player_id, Direction.Up)); break;
-                case 40: engine.act(new RequestMove(player_id, Direction.Down)); break;
-                case 37: engine.act(new RequestMove(player_id, Direction.Left)); break;
-                case 39: engine.act(new RequestMove(player_id, Direction.Right)); break;
-                case 190: engine.act(new RequestWait(player_id)); break;
+                case 38: engine.act(new RequestMove(engine.current_tick(), player_id, Direction.Up)); break;
+                case 40: engine.act(new RequestMove(engine.current_tick(), player_id, Direction.Down)); break;
+                case 37: engine.act(new RequestMove(engine.current_tick(), player_id, Direction.Left)); break;
+                case 39: engine.act(new RequestMove(engine.current_tick(), player_id, Direction.Right)); break;
+                case 190: engine.act(new RequestWait(engine.current_tick(), player_id)); break;
                 default: return;
             }
             engine.run();

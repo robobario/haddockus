@@ -20,21 +20,31 @@ export type InputEvent = PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | Reque
 
 export type StateChangeEvent = PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | ConsciousDecision | NpcDecision | StartMove | FinishMove | Negate | InitiateCombat | Melee | Damage | Death | StartWait | FinishWait
 
-export abstract class OneWayInteraction {
+export abstract class TickEvent {
+    readonly tick: number;
+    constructor(tick: number) {
+        this.tick = tick;
+    }
+}
+
+export abstract class OneWayInteraction extends TickEvent {
     readonly from_actor_id: string;
     readonly to_actor_id: string;
-    constructor(from_actor_id: string, to_actor_id: string) {
+    constructor(tick: number, from_actor_id: string, to_actor_id: string) {
+        super(tick);
         this.from_actor_id = from_actor_id;
         this.to_actor_id = to_actor_id;
     }
 }
 
-export abstract class ActorEvent {
+export abstract class ActorEvent extends TickEvent {
     readonly actor_id: string;
-    constructor(actor_id: string) {
+    constructor(tick: number, actor_id: string) {
+        super(tick);
         this.actor_id = actor_id;
     }
 }
+
 
 export class PlaceWall {
     readonly kind = "place-wall";
@@ -60,8 +70,8 @@ export class SpawnMonster extends ActorEvent {
     readonly kind = "spawn-monster";
     readonly x: number;
     readonly y: number;
-    constructor(x: number, y: number, id: string) {
-        super(id);
+    constructor(tick: number, x: number, y: number, id: string) {
+        super(tick, id);
         this.x = x;
         this.y = y;
     }
@@ -71,8 +81,8 @@ export class SpawnPc extends ActorEvent {
     readonly kind = "spawn-pc";
     readonly x: number;
     readonly y: number;
-    constructor(x: number, y: number, id: string) {
-        super(id);
+    constructor(tick: number, x: number, y: number, id: string) {
+        super(tick, id);
         this.x = x;
         this.y = y;
     }
@@ -93,8 +103,8 @@ export class Death extends ActorEvent {
 export class Damage extends ActorEvent {
     readonly kind = "damage";
     readonly damage: number;
-    constructor(actor_id: string, damage: number) {
-        super(actor_id);
+    constructor(tick: number, actor_id: string, damage: number) {
+        super(tick, actor_id);
         this.damage = damage;
     }
 }
@@ -106,8 +116,8 @@ export class InitiateCombat extends OneWayInteraction {
 export class Melee extends OneWayInteraction {
     readonly kind = "melee";
     readonly damage: number;
-    constructor(from_actor_id: string, to_actor_id: string, damage: number) {
-        super(from_actor_id, to_actor_id);
+    constructor(tick: number, from_actor_id: string, to_actor_id: string, damage: number) {
+        super(tick, from_actor_id, to_actor_id);
         this.damage = damage;
     }
 }
@@ -127,8 +137,8 @@ export class RequestWait extends ActorEvent {
 export class RequestMove extends ActorEvent {
     readonly kind = "request-move";
     readonly direction: Direction;
-    constructor(actor_id: string, direction: Direction) {
-        super(actor_id);
+    constructor(tick: number, actor_id: string, direction: Direction) {
+        super(tick, actor_id);
         this.direction = direction;
     }
 }
@@ -144,8 +154,8 @@ export class FinishWait extends ActorEvent {
 export class StartMove extends ActorEvent {
     readonly kind = "start-move";
     readonly direction: Direction;
-    constructor(actor_id: string, direction: Direction) {
-        super(actor_id);
+    constructor(tick: number, actor_id: string, direction: Direction) {
+        super(tick, actor_id);
         this.direction = direction;
     }
 }
@@ -153,8 +163,8 @@ export class StartMove extends ActorEvent {
 export class FinishMove extends ActorEvent {
     readonly kind = "finish-move";
     readonly direction: Direction;
-    constructor(actor_id: string, direction: Direction) {
-        super(actor_id);
+    constructor(tick: number, actor_id: string, direction: Direction) {
+        super(tick, actor_id);
         this.direction = direction;
     }
 }

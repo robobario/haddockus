@@ -16,7 +16,7 @@ export class Engine {
 
     act(event: e.InputEvent) {
         this.input_events.push(event);
-        extend(this.events, StateChangeCalculator.calculate_state_changes([event]));
+        extend(this.events, StateChangeCalculator.calculate_state_changes([event], this.tick));
     }
 
     snapshot() {
@@ -57,5 +57,9 @@ export class Engine {
         if (reactions.length > 0) {
             this.events.splice(this.processedOffset + 1, 0, ...reactions);
         }
+    }
+
+    current_tick(): number {
+        return this.tick;
     }
 }

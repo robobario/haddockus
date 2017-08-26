@@ -50,10 +50,10 @@ export class Character extends BaseActor {
         }
         const reactions: StateChangeEvent[] = [];
         switch (event.kind) {
-            case "finish-move": extend(reactions, negate_movement_and_initiate_combat(event, this)); break;
-            case "initiate-combat": extend(reactions, this.resolve_initiate_combat(event)); break;
-            case "melee": extend(reactions, this.resolve_incoming_melee(event)); break;
-            case "damage": extend(reactions, this.resolve_damage(event)); break;
+            case "finish-move": extend(reactions, negate_movement_and_initiate_combat(event, this, tick)); break;
+            case "initiate-combat": extend(reactions, this.resolve_initiate_combat(event, tick)); break;
+            case "melee": extend(reactions, this.resolve_incoming_melee(event, tick)); break;
+            case "damage": extend(reactions, this.resolve_damage(event, tick)); break;
             case "death": extend(reactions, this.resolve_death(event)); break;
         }
         return reactions;
@@ -73,29 +73,29 @@ export class Character extends BaseActor {
         return event.to_actor_id === this.actor_id;
     }
 
-    private resolve_damage(event: Damage): StateChangeEvent[] {
+    private resolve_damage(event: Damage, tick: number): StateChangeEvent[] {
         if (!this.is_target_me(event)) {
             return EMPTY
         }
         this.hp = this.hp - event.damage;
         if (this.hp <= 0) {
-            return [new Death(this.actor_id)]
+            return [new Death(tick, this.actor_id)]
         }
         return EMPTY;
     }
 
-    private resolve_initiate_combat(initiation: InitiateCombat): StateChangeEvent[] {
+    private resolve_initiate_combat(initiation: InitiateCombat, tick: number): StateChangeEvent[] {
         if (!this.is_one_way_target(initiation)) {
             return EMPTY
         }
-        return [new Melee(this.actor_id, initiation.from_actor_id, 5)];
+        return [new Melee(tick, this.actor_id, initiation.from_actor_id, 5)];
     }
 
-    private resolve_incoming_melee(event: Melee): StateChangeEvent[] {
+    private resolve_incoming_melee(event: Melee, tick: number): StateChangeEvent[] {
         if (!this.is_one_way_target(event)) {
             return EMPTY
         }
-        return [new Damage(this.actor_id, event.damage)];
+        return [new Damage(tick, this.actor_id, event.damage)];
     }
 
     queue_action(trigger: StateChangeEvent, tick: number) {
@@ -111,19 +111,19 @@ export class Character extends BaseActor {
             let action = this.actions[i];
             switch (action.event.kind) {
                 case "npc-decision": if (tick - action.start_tick >= this.base_decision_interval) {
-                    actions.push(new NpcDecision(this.actor_id));
+                    actions.push(new NpcDecision(tick, this.actor_id));
                     this.actions.splice(i, 1);
                 } break;
                 case "conscious-decision": if (tick - action.start_tick >= this.base_decision_interval) {
-                    actions.push(new ConsciousDecision(this.actor_id));
+                    actions.push(new ConsciousDecision(tick, this.actor_id));
                     this.actions.splice(i, 1);
                 } break;
                 case "start-move": if (tick - action.start_tick >= 16) {
-                    actions.push(new FinishMove(this.actor_id, action.event.direction));
+                    actions.push(new FinishMove(tick, this.actor_id, action.event.direction));
                     this.actions.splice(i, 1);
                 } break;
                 case "start-wait": if (tick - action.start_tick >= 16) {
-                    actions.push(new FinishWait(this.actor_id));
+                    actions.push(new FinishWait(tick, this.actor_id));
                     this.actions.splice(i, 1);
                 } break;
             }
@@ -146,14 +146,14 @@ export class Wall extends BaseActor {
 
 }
 
-function negate_movement_and_initiate_combat(event: FinishMove, actor: BaseActor) {
+function negate_movement_and_initiate_combat(event: FinishMove, actor: BaseActor, tick: number) {
     let thisActor = actor.actor_id;
     let movingActor = event.actor_id;
     if (thisActor === movingActor) {
         return EMPTY;
     }
     if (actor.grid.locate(thisActor) === actor.grid.locate(movingActor)) {
-        return [new Negate(event), new InitiateCombat(thisActor, movingActor)];
+        return [new Negate(event), new InitiateCombat(tick, thisActor, movingActor)];
     } else {
         return EMPTY;
     }

@@ -72,12 +72,12 @@ export class World {
     }
 
     queue_monster_decision(event: e.NpcDecision, tick: number) {
-        this.queue_action(event.actor_id, new e.StartMove(event.actor_id, Direction.Left), tick);
-        this.queue_action(event.actor_id, new e.NpcDecision(event.actor_id), tick)
+        this.queue_action(event.actor_id, new e.StartMove(tick, event.actor_id, Direction.Left), tick);
+        this.queue_action(event.actor_id, new e.NpcDecision(tick, event.actor_id), tick)
     }
 
     queue_next_decision(event: e.ConsciousDecision, tick: number) {
-        this.queue_action(event.actor_id, new e.ConsciousDecision(event.actor_id), tick)
+        this.queue_action(event.actor_id, new e.ConsciousDecision(tick, event.actor_id), tick)
     }
 
     start_move(move: e.StartMove, tick: number) {
