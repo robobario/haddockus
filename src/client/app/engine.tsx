@@ -2,7 +2,7 @@ import { Grid, Cell } from "./grid"
 import * as e from "./event"
 import * as a from "./actor"
 import { StateChangeCalculator } from "./state_change_calculator"
-import { World } from "./state"
+import { World } from "./world"
 import { extend } from "./lang"
 import { StateChangeEvent, Tick, TickEvent } from "./event";
 
