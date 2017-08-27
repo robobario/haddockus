@@ -45,25 +45,23 @@ export abstract class ActorEvent extends TickEvent {
     }
 }
 
-
-export class PlaceWall {
-    readonly kind = "place-wall";
+export class LocationEvent extends TickEvent {
     readonly x: number;
     readonly y: number;
-    constructor(x: number, y: number) {
+    constructor(tick: number, x: number, y: number) {
+        super(tick);
         this.x = x;
         this.y = y;
     }
 }
 
-export class PlaceFloor {
+
+export class PlaceWall extends LocationEvent {
+    readonly kind = "place-wall";
+}
+
+export class PlaceFloor extends LocationEvent {
     readonly kind = "place-floor";
-    readonly x: number;
-    readonly y: number;
-    constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-    }
 }
 
 export class SpawnMonster extends ActorEvent {
@@ -122,10 +120,11 @@ export class Melee extends OneWayInteraction {
     }
 }
 
-export class Negate {
+export class Negate extends TickEvent {
     readonly kind = "negate";
     readonly event_to_negate: StateChangeEvent;
     constructor(event_to_negate: StateChangeEvent) {
+        super(event_to_negate.tick);
         this.event_to_negate = event_to_negate;
     }
 }

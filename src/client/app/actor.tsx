@@ -51,9 +51,9 @@ export class Character extends BaseActor {
         const reactions: StateChangeEvent[] = [];
         switch (event.kind) {
             case "finish-move": extend(reactions, negate_movement_and_initiate_combat(event, this, tick)); break;
-            case "initiate-combat": extend(reactions, this.resolve_initiate_combat(event, tick)); break;
-            case "melee": extend(reactions, this.resolve_incoming_melee(event, tick)); break;
-            case "damage": extend(reactions, this.resolve_damage(event, tick)); break;
+            case "initiate-combat": extend(reactions, this.resolve_initiate_combat(event)); break;
+            case "melee": extend(reactions, this.resolve_incoming_melee(event)); break;
+            case "damage": extend(reactions, this.resolve_damage(event)); break;
             case "death": extend(reactions, this.resolve_death(event)); break;
         }
         return reactions;
@@ -73,29 +73,29 @@ export class Character extends BaseActor {
         return event.to_actor_id === this.actor_id;
     }
 
-    private resolve_damage(event: Damage, tick: number): StateChangeEvent[] {
+    private resolve_damage(event: Damage): StateChangeEvent[] {
         if (!this.is_target_me(event)) {
             return EMPTY
         }
         this.hp = this.hp - event.damage;
         if (this.hp <= 0) {
-            return [new Death(tick, this.actor_id)]
+            return [new Death(event.tick, this.actor_id)]
         }
         return EMPTY;
     }
 
-    private resolve_initiate_combat(initiation: InitiateCombat, tick: number): StateChangeEvent[] {
+    private resolve_initiate_combat(initiation: InitiateCombat): StateChangeEvent[] {
         if (!this.is_one_way_target(initiation)) {
             return EMPTY
         }
-        return [new Melee(tick, this.actor_id, initiation.from_actor_id, 5)];
+        return [new Melee(initiation.tick, this.actor_id, initiation.from_actor_id, 5)];
     }
 
-    private resolve_incoming_melee(event: Melee, tick: number): StateChangeEvent[] {
+    private resolve_incoming_melee(event: Melee): StateChangeEvent[] {
         if (!this.is_one_way_target(event)) {
             return EMPTY
         }
-        return [new Damage(tick, this.actor_id, event.damage)];
+        return [new Damage(event.tick, this.actor_id, event.damage)];
     }
 
     queue_action(trigger: StateChangeEvent, tick: number) {
