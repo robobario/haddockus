@@ -1,6 +1,6 @@
 import { Grid, Cell } from "./grid"
 import * as e from "./event"
-import * as a from "./actor"
+import * as a from "./character"
 import { StateChangeCalculator } from "./state_change_calculator"
 import { World } from "./world"
 import { extend } from "./lang"
@@ -53,7 +53,7 @@ export class Engine {
     }
 
     private apply_state_change(event: StateChangeEvent) {
-        let reactions = this.world.apply_state_change(event, this.tick);
+        let reactions = this.world.react(event, this.tick);
         if (reactions.length > 0) {
             this.events.splice(this.processedOffset + 1, 0, ...reactions);
         }

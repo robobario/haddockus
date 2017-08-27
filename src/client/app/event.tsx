@@ -1,4 +1,5 @@
-import { Actor, Character } from './actor';
+import { Character } from './character';
+import { Actor } from "./actor";
 
 export const enum Direction {
     Up,

@@ -1,7 +1,8 @@
 import { Grid, Cell } from "./grid"
-import { Actor, Character } from "./actor"
+import { Character } from "./character"
 import { Sprites } from "./sprites"
 import { iteritems } from "./lang"
+import { Actor } from "./actor";
 
 export class View {
     private sprites: Sprites = new Sprites();

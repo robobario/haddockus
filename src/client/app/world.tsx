@@ -1,21 +1,24 @@
-import { Grid, Cell } from "./grid"
+import { Grid } from "./grid"
 import * as e from "./event"
-import * as a from "./actor"
-import { StateChangeCalculator } from "./state_change_calculator"
-import { extend, iteritems, flatmap } from "./lang"
-import { Direction } from "./event";
-import { Actor } from "./actor";
+import * as a from "./character"
+import { flatmap } from "./lang"
+import { Actor, BaseActor } from "./actor";
+import { Wall } from "./scenery";
 
-export class World {
-    private grid: Grid = new Grid(16, 16);
-    private actors: { [key: string]: a.Actor } = {};
+export class World extends BaseActor {
+    readonly kind: string = "world";
+    private actors: { [key: string]: Actor } = {};
     private id_sequence: number = 0;
+
+    constructor() {
+        super(String(0), new Grid(16, 16));
+    }
 
     private actor(id: string) {
         return this.actors[id];
     }
 
-    private add_actor(actor: a.Actor, x: number, y: number) {
+    private add_actor(actor: Actor, x: number, y: number) {
         this.actors[actor.actor_id] = actor;
         this.grid.add_actor(x, y, actor);
     }
@@ -31,7 +34,7 @@ export class World {
     }
 
     private place_wall(event: e.PlaceWall) {
-        const wall = new a.Wall(this.get_unique_actor_id(), this.grid);
+        const wall = new Wall(this.get_unique_actor_id(), this.grid);
         this.add_actor(wall, event.x, event.y);
     }
 
@@ -43,7 +46,7 @@ export class World {
         return this.grid
     }
 
-    apply_state_change(event: e.StateChangeEvent, tick: number): e.StateChangeEvent[] {
+    react(event: e.StateChangeEvent, tick: number): e.StateChangeEvent[] {
         switch (event.kind) {
             case "place-wall": this.place_wall(event); break;
             case "place-floor": this.grid.get(event.x, event.y).set_floor(true); break;
@@ -52,7 +55,7 @@ export class World {
             case "finish-move": this.finish_move(event); break;
             case "negate": this.negate(event); break;
         }
-        return this.react(event, tick);
+        return this.all_actors_react(event, tick);
     }
 
     private negate(event: e.Negate) {
@@ -62,7 +65,7 @@ export class World {
         }
     }
 
-    private react(event: e.StateChangeEvent, tick: number): e.StateChangeEvent[] {
+    private all_actors_react(event: e.StateChangeEvent, tick: number): e.StateChangeEvent[] {
         return flatmap(this.actors, (id: string, actor: Actor) => {
             return actor.react(event, tick);
         });
