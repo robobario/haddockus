@@ -29,13 +29,14 @@ export class Character extends BaseActor {
     readonly base_decision_interval: number = 16;
     private hp: number = 50;
     private alive: boolean = true;
+    private death_event: Death | null = null;
 
     is_alive(): boolean {
         return this.alive;
     }
 
     react(event: StateChangeEvent, tick: number): StateChangeEvent[] {
-        if (!this.alive) {
+        if (this.is_dead(tick)) {
             return EMPTY;
         }
         const reactions: StateChangeEvent[] = [];
@@ -52,6 +53,7 @@ export class Character extends BaseActor {
     private resolve_death(event: Death): StateChangeEvent[] {
         if (this.is_target_me(event)) {
             this.alive = false;
+            this.death_event = event;
         }
         return EMPTY;
     }
@@ -93,7 +95,7 @@ export class Character extends BaseActor {
     }
 
     resolve_actions(tick: number): StateChangeEvent[] {
-        if (!this.alive) {
+        if (this.is_dead(tick)) {
             return EMPTY
         }
         let state_changes: StateChangeEvent[] = [];
@@ -121,6 +123,9 @@ export class Character extends BaseActor {
         return state_changes;
     }
 
+    private is_dead(tick: number) {
+        return !this.alive && this.death_event !== null && this.death_event.tick != tick;
+    }
 }
 
 export class Wall extends BaseActor {
