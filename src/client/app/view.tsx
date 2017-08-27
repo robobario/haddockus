@@ -1,7 +1,7 @@
 import { Grid, Cell } from "./grid"
-import { Character } from "./character"
+import { Character, Species } from "./character"
 import { Sprites } from "./sprites"
-import { iteritems } from "./lang"
+import { any_match, iteritems } from "./lang"
 import { Actor } from "./actor";
 
 export class View {
@@ -25,23 +25,33 @@ export class View {
             if (cell.is_floor) {
                 this.draw_sprite(x, y, this.get_floor_sprite('floor', cell));
             }
+
+            any_match(cell.actors, (actor: Actor) => {
+                switch (actor.kind) {
+                    case "character": return !actor.is_alive();
+                    default: return false;
+                }
+            }, () => this.draw_sprite(x, y, "corpse"));
+
             iteritems(cell.actors, (key: string, actor: Actor) => {
                 switch (actor.kind) {
-                    case "character": this.render_human(x, y, actor); break;
+                    case "character": this.render_character(x, y, actor); break;
                     case "wall": this.render_wall(x, y, actor); break;
                 }
             });
         })
     }
 
-    render_human(x: number, y: number, actor: Character) {
-        let spriteName: string;
+    render_character(x: number, y: number, actor: Character) {
         if (actor.is_alive()) {
-            spriteName = this.get_sprite_name('human', actor);
-        } else {
-            spriteName = 'corpse';
+            let spriteName: string;
+            switch (actor.species) {
+                case Species.Human: spriteName = this.get_sprite_name('human', actor); break;
+                case Species.Goblin: spriteName = this.get_sprite_name('goblin', actor); break;
+                default: throw new Error("unrecognized species!");
+            }
+            this.draw_sprite(x, y, spriteName)
         }
-        this.draw_sprite(x, y, spriteName)
     }
 
     render_wall(x: number, y: number, actor: Actor) {

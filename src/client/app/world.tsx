@@ -4,6 +4,7 @@ import * as a from "./character"
 import { flatmap } from "./lang"
 import { Actor, BaseActor } from "./actor";
 import { Wall } from "./scenery";
+import { Species } from "./character";
 
 export class World extends BaseActor {
     readonly kind = "world";
@@ -24,12 +25,12 @@ export class World extends BaseActor {
     }
 
     private spawn_monster(event: e.SpawnMonster) {
-        const monster = new a.Character(event.actor_id, this.grid);
+        const monster = new a.Character(Species.Goblin, event.actor_id, this.grid);
         this.add_actor(monster, event.x, event.y);
     }
 
     private spawn_pc(event: e.SpawnPc) {
-        const pc = new a.Character(event.actor_id, this.grid);
+        const pc = new a.Character(Species.Human, event.actor_id, this.grid);
         this.add_actor(pc, event.x, event.y);
     }
 

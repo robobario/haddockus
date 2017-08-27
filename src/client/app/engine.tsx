@@ -11,7 +11,6 @@ export class Engine {
     private readonly events: e.StateChangeEvent[] = [];
     private tick: number = 0;
     private processedOffset: number = 0;
-    private readonly state_change_calculator = new StateChangeCalculator();
     private readonly world = new World();
 
     act(event: e.InputEvent) {

@@ -1,9 +1,13 @@
 import * as e from './event'
 import { extend } from './lang'
 import { BaseActor } from "./actor";
+import { Grid } from "./grid";
 
 const EMPTY: e.StateChangeEvent[] = [];
-
+export const enum Species {
+    Human,
+    Goblin
+}
 export class Character extends BaseActor {
     readonly kind = "character";
     private actions: e.StateChangeEvent[] = [];
@@ -11,6 +15,12 @@ export class Character extends BaseActor {
     private hp: number = 50;
     private alive: boolean = true;
     private death_event: e.Death | null = null;
+    readonly species: Species = Species.Human;
+
+    constructor(species: Species, actor_id: string, grid: Grid) {
+        super(actor_id, grid);
+        this.species = species;
+    }
 
     is_alive(): boolean {
         return this.alive;
