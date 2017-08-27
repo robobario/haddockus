@@ -1,15 +1,22 @@
 import { Actor } from './actor';
 import { Direction } from './event';
 
-export class Cell {
-    is_floor: boolean = false;
-    readonly random_num: number = Math.floor(Math.random() * 100) + 1;
+export class Coordinates {
     readonly x: number;
     readonly y: number;
-    readonly actors: { [key: string]: Actor } = {};
     constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
+    }
+}
+
+export class Cell {
+    is_floor: boolean = false;
+    readonly random_num: number = Math.floor(Math.random() * 100) + 1;
+    readonly coordinate: Coordinates;
+    readonly actors: { [key: string]: Actor } = {};
+    constructor(x: number, y: number) {
+        this.coordinate = new Coordinates(x, y);
     }
     set_floor(is_floor: boolean) {
         this.is_floor = is_floor;
@@ -52,8 +59,8 @@ export class Grid {
     }
     move(actor_id: string, direction: Direction) {
         let cell = this.actors[actor_id];
-        let x = cell.x;
-        let y = cell.y;
+        let x = cell.coordinate.x;
+        let y = cell.coordinate.y;
         switch (direction) {
             case (Direction.Up): y -= 1; break;
             case (Direction.Down): y += 1; break;

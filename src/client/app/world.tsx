@@ -26,17 +26,17 @@ export class World extends BaseActor {
 
     private spawn_monster(event: e.SpawnMonster) {
         const monster = new a.Character(Species.Goblin, event.actor_id, this.grid);
-        this.add_actor(monster, event.x, event.y);
+        this.add_actor(monster, event.coordinates.x, event.coordinates.y);
     }
 
     private spawn_pc(event: e.SpawnPc) {
         const pc = new a.Character(Species.Human, event.actor_id, this.grid);
-        this.add_actor(pc, event.x, event.y);
+        this.add_actor(pc, event.coordinates.x, event.coordinates.y);
     }
 
     private place_wall(event: e.PlaceWall) {
         const wall = new Wall(this.get_unique_actor_id(), this.grid);
-        this.add_actor(wall, event.x, event.y);
+        this.add_actor(wall, event.coordinates.x, event.coordinates.y);
     }
 
     get_unique_actor_id() {
@@ -50,7 +50,7 @@ export class World extends BaseActor {
     react(event: e.StateChangeEvent, tick: number): e.StateChangeEvent[] {
         switch (event.kind) {
             case "place-wall": this.place_wall(event); break;
-            case "place-floor": this.grid.get(event.x, event.y).set_floor(true); break;
+            case "place-floor": this.grid.get(event.coordinates.x, event.coordinates.y).set_floor(true); break;
             case "spawn-pc": this.spawn_pc(event); break;
             case "spawn-monster": this.spawn_monster(event); break;
             case "finish-move": this.finish_move(event); break;

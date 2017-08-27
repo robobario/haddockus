@@ -1,6 +1,7 @@
 import { Engine } from "./engine";
 import { PlaceFloor, SpawnPc, RequestMove, Direction, PlaceWall, SpawnMonster, RequestWait } from "./event"
 import { View } from "./view"
+import { Coordinates } from "./grid";
 
 const view = new View();
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -10,20 +11,20 @@ document.addEventListener("DOMContentLoaded", function(event) {
         let current_tick = engine.current_tick();
         for (let _x = 0; _x < snap.width; _x++) {
             for (let _y = 0; _y < snap.height; _y++) {
-                engine.act(new PlaceFloor(current_tick, _x, _y));
+                engine.act(new PlaceFloor(current_tick, new Coordinates(_x, _y)));
             }
         }
         for (let _x = 0; _x < snap.width; _x++) {
-            engine.act(new PlaceWall(current_tick, _x, 0));
-            engine.act(new PlaceWall(current_tick, _x, snap.height - 1));
+            engine.act(new PlaceWall(current_tick, new Coordinates(_x, 0)));
+            engine.act(new PlaceWall(current_tick, new Coordinates(_x, snap.height - 1)));
         }
         for (let _y = 1; _y < snap.height - 1; _y++) {
-            engine.act(new PlaceWall(current_tick, 0, _y));
-            engine.act(new PlaceWall(current_tick, snap.width - 1, _y));
+            engine.act(new PlaceWall(current_tick, new Coordinates(0, _y)));
+            engine.act(new PlaceWall(current_tick, new Coordinates(snap.width - 1, _y)));
         }
         let player_id = engine.get_unique_actor_id();
-        engine.act(new SpawnPc(current_tick, 5, 5, player_id));
-        engine.act(new SpawnMonster(current_tick, 8, 3, engine.get_unique_actor_id()));
+        engine.act(new SpawnPc(current_tick, player_id, new Coordinates(5, 5)));
+        engine.act(new SpawnMonster(current_tick, engine.get_unique_actor_id(), new Coordinates(8, 3)));
         engine.process_events();
         snap = engine.snapshot();
         view.render(snap);

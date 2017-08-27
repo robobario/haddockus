@@ -1,5 +1,6 @@
 import { Character } from './character';
 import { Actor } from "./actor";
+import { Coordinates } from "./grid";
 
 export const enum Direction {
     Up,
@@ -51,12 +52,10 @@ export abstract class ActorEvent extends TickEvent {
 }
 
 export class LocationEvent extends TickEvent {
-    readonly x: number;
-    readonly y: number;
-    constructor(tick: number, x: number, y: number) {
+    readonly coordinates: Coordinates;
+    constructor(tick: number, coordinates: Coordinates) {
         super(tick);
-        this.x = x;
-        this.y = y;
+        this.coordinates = coordinates;
     }
 }
 
@@ -71,23 +70,19 @@ export class PlaceFloor extends LocationEvent {
 
 export class SpawnMonster extends ActorEvent {
     readonly kind = "spawn-monster";
-    readonly x: number;
-    readonly y: number;
-    constructor(tick: number, x: number, y: number, id: string) {
+    readonly coordinates: Coordinates;
+    constructor(tick: number, id: string, coordinates: Coordinates) {
         super(tick, id);
-        this.x = x;
-        this.y = y;
+        this.coordinates = coordinates;
     }
 }
 
 export class SpawnPc extends ActorEvent {
     readonly kind = "spawn-pc";
-    readonly x: number;
-    readonly y: number;
-    constructor(tick: number, x: number, y: number, id: string) {
+    readonly coordinates: Coordinates;
+    constructor(tick: number, id: string, coordinates: Coordinates) {
         super(tick, id);
-        this.x = x;
-        this.y = y;
+        this.coordinates = coordinates;
     }
 }
 
