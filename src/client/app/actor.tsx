@@ -1,7 +1,7 @@
 import {
     StateChangeEvent, FinishMove, Negate, ConsciousDecision, NpcDecision, InitiateCombat, Melee,
     Damage,
-    Death, ActorEvent, OneWayInteraction, FinishWait,
+    Death, ActorEvent, OneWayInteraction, FinishWait, StartMove, Direction,
 } from './event'
 import { extend } from './lang'
 import { Grid } from "./grid";
@@ -43,6 +43,7 @@ export class Character extends BaseActor {
         switch (event.kind) {
             case "tick": extend(reactions, this.resolve_actions(event.tick)); break;
             case "conscious-decision": if (this.is_target_me(event)) { this.queue_action(event) } break;
+            case "npc-decision": if (this.is_target_me(event)) { this.queue_action(event); this.queue_action(new StartMove(event.tick, this.actor_id, Direction.Left)) } break;
             case "start-move": if (this.is_target_me(event)) { this.queue_action(event) } break;
             case "finish-move": extend(reactions, negate_movement_and_initiate_combat(event, this, tick)); break;
             case "initiate-combat": extend(reactions, this.resolve_initiate_combat(event)); break;
