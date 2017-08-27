@@ -41,6 +41,7 @@ export class Character extends BaseActor {
         }
         const reactions: StateChangeEvent[] = [];
         switch (event.kind) {
+            case "tick": extend(reactions, this.resolve_actions(event.tick)); break;
             case "finish-move": extend(reactions, negate_movement_and_initiate_combat(event, this, tick)); break;
             case "initiate-combat": extend(reactions, this.resolve_initiate_combat(event)); break;
             case "melee": extend(reactions, this.resolve_incoming_melee(event)); break;

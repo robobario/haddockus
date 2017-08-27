@@ -18,13 +18,17 @@ export function opposite_direction(d: Direction): Direction {
 
 export type InputEvent = PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | RequestMove | RequestWait
 
-export type StateChangeEvent = PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | ConsciousDecision | NpcDecision | StartMove | FinishMove | Negate | InitiateCombat | Melee | Damage | Death | StartWait | FinishWait
+export type StateChangeEvent = Tick | PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | ConsciousDecision | NpcDecision | StartMove | FinishMove | Negate | InitiateCombat | Melee | Damage | Death | StartWait | FinishWait
 
 export abstract class TickEvent {
     readonly tick: number;
     constructor(tick: number) {
         this.tick = tick;
     }
+}
+
+export class Tick extends TickEvent {
+    readonly kind = "tick";
 }
 
 export abstract class OneWayInteraction extends TickEvent {

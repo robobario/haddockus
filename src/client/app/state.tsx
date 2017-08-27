@@ -72,37 +72,28 @@ export class World {
     }
 
     queue_monster_decision(event: e.NpcDecision, tick: number) {
-        this.queue_action(event.actor_id, new e.StartMove(tick, event.actor_id, Direction.Left), tick);
-        this.queue_action(event.actor_id, new e.NpcDecision(tick, event.actor_id), tick)
+        this.queue_action(event.actor_id, new e.StartMove(tick, event.actor_id, Direction.Left));
+        this.queue_action(event.actor_id, new e.NpcDecision(tick, event.actor_id))
     }
 
     queue_next_decision(event: e.ConsciousDecision, tick: number) {
-        this.queue_action(event.actor_id, new e.ConsciousDecision(tick, event.actor_id), tick)
+        this.queue_action(event.actor_id, new e.ConsciousDecision(tick, event.actor_id))
     }
 
     start_move(move: e.StartMove, tick: number) {
-        this.queue_action(move.actor_id, move, tick)
+        this.queue_action(move.actor_id, move)
     }
 
     finish_move(move: e.FinishMove) {
         this.grid.move(move.actor_id, move.direction);
     }
 
-    queue_action(actor_id: string, trigger_event: e.StateChangeEvent, tick: number) {
+    queue_action(actor_id: string, trigger_event: e.StateChangeEvent) {
         let actor = this.actor(actor_id);
         switch (actor.kind) {
             case "character": actor.queue_action(trigger_event); break;
             default: throw new Error('tried to queue action for non character action');
         }
-    }
-
-    resolve_actions(tick: number): e.StateChangeEvent[] {
-        return flatmap(this.actors, (key: string, actor: Actor) => {
-            switch (actor.kind) {
-                case "character": return actor.resolve_actions(tick);
-                default: return [];
-            }
-        })
     }
 
 }

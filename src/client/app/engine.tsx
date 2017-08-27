@@ -4,7 +4,7 @@ import * as a from "./actor"
 import { StateChangeCalculator } from "./state_change_calculator"
 import { World } from "./state"
 import { extend } from "./lang"
-import { StateChangeEvent } from "./event";
+import { StateChangeEvent, Tick, TickEvent } from "./event";
 
 export class Engine {
     private readonly input_events: e.InputEvent[] = [];
@@ -30,10 +30,10 @@ export class Engine {
     run() {
         let interrupt_pc = false;
         while (interrupt_pc == false) {
-            extend(this.events, this.world.resolve_actions(this.tick));
             interrupt_pc = this.process_events();
             if (!interrupt_pc) {
                 this.tick += 1;
+                this.events.push(new Tick(this.tick))
             }
         }
     }
