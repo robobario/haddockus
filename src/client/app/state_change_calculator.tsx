@@ -23,6 +23,6 @@ export class StateChangeCalculator {
     }
 
     static spawn_pc(event: SpawnPc, tick: number): StateChangeEvent[] {
-        return [event, new e.ConsciousDecision(tick, event.actor_id)];
+        return [event, new e.PcDecision(tick, event.actor_id)];
     }
 }

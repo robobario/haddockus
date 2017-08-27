@@ -1,5 +1,5 @@
 import {
-    StateChangeEvent, FinishMove, Negate, ConsciousDecision, NpcDecision, InitiateCombat, Melee,
+    StateChangeEvent, FinishMove, Negate, PcDecision, NpcDecision, InitiateCombat, Melee,
     Damage,
     Death, ActorEvent, OneWayInteraction, FinishWait, StartMove, Direction,
 } from './event'
@@ -42,7 +42,7 @@ export class Character extends BaseActor {
         const reactions: StateChangeEvent[] = [];
         switch (event.kind) {
             case "tick": extend(reactions, this.resolve_actions(event.tick)); break;
-            case "conscious-decision": if (this.is_target_me(event)) { this.queue_action(event) } break;
+            case "pc-decision": if (this.is_target_me(event)) { this.queue_action(event) } break;
             case "npc-decision": if (this.is_target_me(event)) { this.queue_action(event); this.queue_action(new StartMove(event.tick, this.actor_id, Direction.Left)) } break;
             case "start-move": if (this.is_target_me(event)) { this.queue_action(event) } break;
             case "finish-move": extend(reactions, negate_movement_and_initiate_combat(event, this, tick)); break;
@@ -110,8 +110,8 @@ export class Character extends BaseActor {
                     state_changes.push(new NpcDecision(tick, this.actor_id));
                     this.actions.splice(i, 1);
                 } break;
-                case "conscious-decision": if (tick - e.tick >= this.base_decision_interval) {
-                    state_changes.push(new ConsciousDecision(tick, this.actor_id));
+                case "pc-decision": if (tick - e.tick >= this.base_decision_interval) {
+                    state_changes.push(new PcDecision(tick, this.actor_id));
                     this.actions.splice(i, 1);
                 } break;
                 case "start-move": if (tick - e.tick >= 16) {

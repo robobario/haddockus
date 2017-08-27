@@ -44,7 +44,7 @@ export class Engine {
             const event: e.StateChangeEvent = this.events[this.processedOffset];
             console.log(event.kind);
             switch (event.kind) {
-                case "conscious-decision": interrupt_pc = true;
+                case "pc-decision": interrupt_pc = true;
                 default: this.apply_state_change(event);
             }
             this.processedOffset += 1;
