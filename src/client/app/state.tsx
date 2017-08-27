@@ -91,7 +91,7 @@ export class World {
     queue_action(actor_id: string, trigger_event: e.StateChangeEvent, tick: number) {
         let actor = this.actor(actor_id);
         switch (actor.kind) {
-            case "character": actor.queue_action(trigger_event, tick); break;
+            case "character": actor.queue_action(trigger_event); break;
             default: throw new Error('tried to queue action for non character action');
         }
     }

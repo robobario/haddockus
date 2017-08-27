@@ -8,16 +8,6 @@ import { Grid } from "./grid";
 
 const EMPTY: StateChangeEvent[] = [];
 
-export class Action {
-    readonly event: StateChangeEvent;
-    readonly start_tick: number;
-
-    constructor(event: StateChangeEvent, start_tick: number) {
-        this.event = event;
-        this.start_tick = start_tick;
-    }
-}
-
 abstract class BaseActor {
     readonly actor_id: string;
     readonly random_num: number;
@@ -35,7 +25,7 @@ abstract class BaseActor {
 
 export class Character extends BaseActor {
     readonly kind = "character";
-    private actions: Action[] = [];
+    private actions: StateChangeEvent[] = [];
     readonly base_decision_interval: number = 16;
     private hp: number = 50;
     private alive: boolean = true;
@@ -98,37 +88,37 @@ export class Character extends BaseActor {
         return [new Damage(event.tick, this.actor_id, event.damage)];
     }
 
-    queue_action(trigger: StateChangeEvent, tick: number) {
-        this.actions.push(new Action(trigger, tick));
+    queue_action(trigger: StateChangeEvent) {
+        this.actions.push(trigger);
     }
 
     resolve_actions(tick: number): StateChangeEvent[] {
         if (!this.alive) {
             return EMPTY
         }
-        let actions: StateChangeEvent[] = [];
+        let state_changes: StateChangeEvent[] = [];
         for (let i = this.actions.length - 1; i >= 0; i--) {
-            let action = this.actions[i];
-            switch (action.event.kind) {
-                case "npc-decision": if (tick - action.start_tick >= this.base_decision_interval) {
-                    actions.push(new NpcDecision(tick, this.actor_id));
+            let e = this.actions[i];
+            switch (e.kind) {
+                case "npc-decision": if (tick - e.tick >= this.base_decision_interval) {
+                    state_changes.push(new NpcDecision(tick, this.actor_id));
                     this.actions.splice(i, 1);
                 } break;
-                case "conscious-decision": if (tick - action.start_tick >= this.base_decision_interval) {
-                    actions.push(new ConsciousDecision(tick, this.actor_id));
+                case "conscious-decision": if (tick - e.tick >= this.base_decision_interval) {
+                    state_changes.push(new ConsciousDecision(tick, this.actor_id));
                     this.actions.splice(i, 1);
                 } break;
-                case "start-move": if (tick - action.start_tick >= 16) {
-                    actions.push(new FinishMove(tick, this.actor_id, action.event.direction));
+                case "start-move": if (tick - e.tick >= 16) {
+                    state_changes.push(new FinishMove(tick, this.actor_id, e.direction));
                     this.actions.splice(i, 1);
                 } break;
-                case "start-wait": if (tick - action.start_tick >= 16) {
-                    actions.push(new FinishWait(tick, this.actor_id));
+                case "start-wait": if (tick - e.tick >= 16) {
+                    state_changes.push(new FinishWait(tick, this.actor_id));
                     this.actions.splice(i, 1);
                 } break;
             }
         }
-        return actions;
+        return state_changes;
     }
 
 }
