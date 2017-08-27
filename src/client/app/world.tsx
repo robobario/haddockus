@@ -6,7 +6,7 @@ import { Actor, BaseActor } from "./actor";
 import { Wall } from "./scenery";
 
 export class World extends BaseActor {
-    readonly kind: string = "world";
+    readonly kind = "world";
     private actors: { [key: string]: Actor } = {};
     private id_sequence: number = 0;
 
@@ -74,13 +74,4 @@ export class World extends BaseActor {
     finish_move(move: e.FinishMove) {
         this.grid.move(move.actor_id, move.direction);
     }
-
-    queue_action(actor_id: string, trigger_event: e.StateChangeEvent) {
-        let actor = this.actor(actor_id);
-        switch (actor.kind) {
-            case "character": actor.queue_action(trigger_event); break;
-            default: throw new Error('tried to queue action for non character action');
-        }
-    }
-
 }

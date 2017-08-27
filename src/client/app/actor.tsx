@@ -2,6 +2,7 @@ import { Grid } from "./grid";
 import { StateChangeEvent } from "./event";
 import { Character } from "./character";
 import { Wall } from "./scenery";
+import { World } from "./world";
 
 export abstract class BaseActor {
     readonly actor_id: string;
@@ -18,4 +19,4 @@ export abstract class BaseActor {
     abstract react(event: StateChangeEvent, tick: number): StateChangeEvent[];
 }
 
-export type Actor = Character | Wall
+export type Actor = Character | Wall | World
