@@ -49,9 +49,7 @@ export class World {
             case "place-floor": this.grid.get(event.x, event.y).set_floor(true); break;
             case "spawn-pc": this.spawn_pc(event); break;
             case "spawn-monster": this.spawn_monster(event); break;
-            case "conscious-decision": this.queue_next_decision(event, tick); break;
             case "npc-decision": this.queue_monster_decision(event, tick); break;
-            case "start-move": this.start_move(event, tick); break;
             case "finish-move": this.finish_move(event); break;
             case "negate": this.negate(event); break;
         }
@@ -74,14 +72,6 @@ export class World {
     queue_monster_decision(event: e.NpcDecision, tick: number) {
         this.queue_action(event.actor_id, new e.StartMove(tick, event.actor_id, Direction.Left));
         this.queue_action(event.actor_id, new e.NpcDecision(tick, event.actor_id))
-    }
-
-    queue_next_decision(event: e.ConsciousDecision, tick: number) {
-        this.queue_action(event.actor_id, new e.ConsciousDecision(tick, event.actor_id))
-    }
-
-    start_move(move: e.StartMove, tick: number) {
-        this.queue_action(move.actor_id, move)
     }
 
     finish_move(move: e.FinishMove) {
