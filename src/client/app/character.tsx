@@ -2,6 +2,7 @@ import * as e from './event'
 import { extend } from './lang'
 import { BaseActor } from "./actor";
 import { Grid } from "./grid";
+import { EndTick, StateChangeEvent } from "./event";
 
 const EMPTY: e.StateChangeEvent[] = [];
 export const enum Species {
@@ -33,6 +34,7 @@ export class Character extends BaseActor {
         const reactions: e.StateChangeEvent[] = [];
         switch (event.kind) {
             case "tick": extend(reactions, this.resolve_actions(event.tick)); break;
+            case "end-tick": extend(reactions, this.resolve_end_tick(event)); break;
             case "pc-decision": if (this.is_target_me(event)) { this.queue_action(event) } break;
             case "npc-decision": if (this.is_target_me(event)) { this.queue_action(event); this.queue_action(new e.StartMove(event.tick, this.actor_id, e.Direction.Left)) } break;
             case "start-move": if (this.is_target_me(event)) { this.queue_action(event) } break;
@@ -65,9 +67,6 @@ export class Character extends BaseActor {
             return EMPTY
         }
         this.hp = this.hp - event.damage;
-        if (this.hp <= 0) {
-            return [new e.Death(event.tick, this.actor_id)]
-        }
         return EMPTY;
     }
 
@@ -120,6 +119,14 @@ export class Character extends BaseActor {
 
     private is_dead(tick: number) {
         return !this.alive && this.death_event !== null && this.death_event.tick != tick;
+    }
+
+    private resolve_end_tick(event: EndTick): StateChangeEvent[] {
+        if (this.hp <= 0) {
+            return [new e.Death(event.tick, this.actor_id)]
+        } else {
+            return EMPTY;
+        }
     }
 }
 
