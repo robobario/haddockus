@@ -99,9 +99,25 @@ export class View {
                 default: throw new Error("unrecognized species!");
             }
             this.draw_sprite(x, y, spriteName);
-            if (actor.get_hp() < 10) {
-                this.draw_sprite(x, y, "mdam_almost_dead");
-            }
+            this.renderHealthOverlay(actor, x, y);
+        }
+    }
+
+    private renderHealthOverlay(actor: Character, x: number, y: number) {
+        if (actor.get_hp() < 6) {
+            this.draw_sprite(x, y, "mdam_almost_dead");
+        }
+        else if (actor.get_hp() < 16) {
+            this.draw_sprite(x, y, "mdam_severely_damaged");
+        }
+        else if (actor.get_hp() < 21) {
+            this.draw_sprite(x, y, "mdam_heavily_damaged");
+        }
+        else if (actor.get_hp() < 31) {
+            this.draw_sprite(x, y, "mdam_moderately_damaged");
+        }
+        else if (actor.get_hp() < 41) {
+            this.draw_sprite(x, y, "mdam_lightly_damaged");
         }
     }
 
