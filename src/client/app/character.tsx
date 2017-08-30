@@ -9,11 +9,22 @@ export const enum Species {
     Human,
     Goblin
 }
+
+export const enum HealthIndicator {
+    NEAR_DEATH,
+    SEVERELY_WOUNDED,
+    HEAVILY_WOUNDED,
+    MODERATELY_WOUNDED,
+    LIGHTLY_WOUNDED,
+    HEALTHY
+}
+
 export class Character extends BaseActor {
     readonly kind = "character";
     private actions: e.StateChangeEvent[] = [];
     readonly base_decision_interval: number = 16;
     private hp: number = 50;
+    private hp_max: number = 50;
     private alive: boolean = true;
     private death_event: e.Death | null = null;
     readonly species: Species = Species.Human;
@@ -27,8 +38,26 @@ export class Character extends BaseActor {
         return this.alive;
     }
 
-    get_hp(): number {
-        return this.hp;
+    get_health_indicator(): HealthIndicator {
+        let percent = (this.hp * 100) / this.hp_max;
+        if (percent <= 10) {
+            return HealthIndicator.NEAR_DEATH;
+        }
+        else if (percent <= 20) {
+            return HealthIndicator.SEVERELY_WOUNDED;
+        }
+        else if (percent <= 40) {
+            return HealthIndicator.HEAVILY_WOUNDED;
+        }
+        else if (percent <= 60) {
+            return HealthIndicator.MODERATELY_WOUNDED;
+        }
+        else if (percent <= 80) {
+            return HealthIndicator.LIGHTLY_WOUNDED;
+        }
+        else {
+            return HealthIndicator.HEALTHY;
+        }
     }
 
     react(event: e.StateChangeEvent, tick: number): e.StateChangeEvent[] {

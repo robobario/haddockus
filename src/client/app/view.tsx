@@ -1,5 +1,5 @@
 import { Grid, Cell } from "./grid"
-import { Character, Species } from "./character"
+import { Character, HealthIndicator, Species } from "./character"
 import { Sprites } from "./sprites"
 import { any_match, iteritems } from "./lang"
 import { Actor } from "./actor";
@@ -104,20 +104,12 @@ export class View {
     }
 
     private renderHealthOverlay(actor: Character, x: number, y: number) {
-        if (actor.get_hp() < 6) {
-            this.draw_sprite(x, y, "mdam_almost_dead");
-        }
-        else if (actor.get_hp() < 16) {
-            this.draw_sprite(x, y, "mdam_severely_damaged");
-        }
-        else if (actor.get_hp() < 21) {
-            this.draw_sprite(x, y, "mdam_heavily_damaged");
-        }
-        else if (actor.get_hp() < 31) {
-            this.draw_sprite(x, y, "mdam_moderately_damaged");
-        }
-        else if (actor.get_hp() < 41) {
-            this.draw_sprite(x, y, "mdam_lightly_damaged");
+        switch (actor.get_health_indicator()) {
+            case HealthIndicator.NEAR_DEATH: this.draw_sprite(x, y, "mdam_almost_dead"); break;
+            case HealthIndicator.SEVERELY_WOUNDED: this.draw_sprite(x, y, "mdam_severely_damaged"); break;
+            case HealthIndicator.HEAVILY_WOUNDED: this.draw_sprite(x, y, "mdam_heavily_damaged"); break;
+            case HealthIndicator.MODERATELY_WOUNDED: this.draw_sprite(x, y, "mdam_moderately_damaged"); break;
+            case HealthIndicator.LIGHTLY_WOUNDED: this.draw_sprite(x, y, "mdam_lightly_damaged"); break;
         }
     }
 
