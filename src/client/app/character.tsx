@@ -1,8 +1,8 @@
 import * as e from './event'
-import { extend } from './lang'
+import { extend, iteritems } from './lang'
 import { BaseActor } from "./actor";
-import { Grid } from "./grid";
-import { EndTick, StateChangeEvent } from "./event";
+import { Coordinates, Grid } from "./grid";
+import { EndTick, StartMove, StateChangeEvent } from "./event";
 
 const EMPTY: e.StateChangeEvent[] = [];
 export const enum Species {
@@ -27,6 +27,10 @@ export class Character extends BaseActor {
         return this.alive;
     }
 
+    get_hp(): number {
+        return this.hp;
+    }
+
     react(event: e.StateChangeEvent, tick: number): e.StateChangeEvent[] {
         if (this.is_dead(tick)) {
             return EMPTY;
@@ -36,7 +40,7 @@ export class Character extends BaseActor {
             case "tick": extend(reactions, this.resolve_actions(event.tick)); break;
             case "end-tick": extend(reactions, this.resolve_end_tick(event)); break;
             case "pc-decision": if (this.is_target_me(event)) { this.queue_action(event) } break;
-            case "npc-decision": if (this.is_target_me(event)) { this.queue_action(event); this.queue_action(new e.StartMove(event.tick, this.actor_id, e.Direction.Left)) } break;
+            case "npc-decision": if (this.is_target_me(event)) { this.queue_action(event); this.queue_action(this.npc_decision(event)) } break;
             case "start-move": if (this.is_target_me(event)) { this.queue_action(event) } break;
             case "finish-move": extend(reactions, negate_movement_and_initiate_combat(event, this, tick)); break;
             case "initiate-combat": extend(reactions, this.resolve_initiate_combat(event)); break;
@@ -45,6 +49,49 @@ export class Character extends BaseActor {
             case "death": extend(reactions, this.resolve_death(event)); break;
         }
         return reactions;
+    }
+
+    private npc_decision(event: StateChangeEvent) {
+        let my_cell = this.grid.locate(this.actor_id);
+        let my_species = this.species;
+        let me = this;
+        let reaction: null | StateChangeEvent = null;
+        this.grid.foreach((x, y, cell) => {
+            if (Math.abs(my_cell.coordinate.x - x) < 5 && Math.abs(my_cell.coordinate.y - y) < 5) {
+                let actors = cell.actors;
+                iteritems(actors, function(key, value) {
+                    switch (value.kind) {
+                        case "character": if (value.species !== my_species) {
+                            reaction = me.move_towards(event.tick, my_cell.coordinate, cell.coordinate)
+                        }
+                    }
+                });
+            }
+        });
+        if (reaction != null) {
+            return reaction;
+        }
+        return new e.StartWait(event.tick, this.actor_id);
+    }
+
+    private move_towards(tick: number, from: Coordinates, to: Coordinates): StateChangeEvent {
+        let diff_x = from.x - to.x;
+        let diff_y = from.y - to.y;
+        let abs_diff_x = Math.abs(diff_x);
+        let abs_diff_y = Math.abs(diff_y);
+        if (abs_diff_x > abs_diff_y) {
+            if (diff_x < 0) {
+                return new StartMove(tick, this.actor_id, e.Direction.Right)
+            } else {
+                return new StartMove(tick, this.actor_id, e.Direction.Left)
+            }
+        } else {
+            if (diff_y < 0) {
+                return new StartMove(tick, this.actor_id, e.Direction.Down)
+            } else {
+                return new StartMove(tick, this.actor_id, e.Direction.Up)
+            }
+        }
     }
 
     private resolve_death(event: e.Death): e.StateChangeEvent[] {

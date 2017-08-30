@@ -98,7 +98,10 @@ export class View {
                 case Species.Goblin: spriteName = this.get_sprite_name('goblin', actor); break;
                 default: throw new Error("unrecognized species!");
             }
-            this.draw_sprite(x, y, spriteName)
+            this.draw_sprite(x, y, spriteName);
+            if (actor.get_hp() < 10) {
+                this.draw_sprite(x, y, "mdam_almost_dead");
+            }
         }
     }
 
