@@ -18,9 +18,9 @@ export function opposite_direction(d: Direction): Direction {
     }
 }
 
-export type InputEvent = PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | RequestMove | RequestWait
+export type InputEvent = PlaceSword | PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | RequestMove | RequestWait
 
-export type StateChangeEvent = StartTick | EndTick | PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | PcDecision | NpcDecision | StartMove | FinishMove | Negate | InitiateCombat | Melee | Damage | Death | StartWait | FinishWait
+export type StateChangeEvent = StartTick | EndTick | Pickup | PlaceSword | PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | PcDecision | NpcDecision | StartMove | FinishMove | Negate | InitiateCombat | Melee | Damage | Death | StartWait | FinishWait
 
 export abstract class TickEvent {
     readonly tick: number;
@@ -63,6 +63,15 @@ export class LocationEvent extends TickEvent {
     }
 }
 
+export class Pickup extends ActorEvent {
+    readonly kind = "pickup";
+    readonly item_id: string;
+    constructor(tick: number, id: string, item_id: string) {
+        super(tick, id);
+        this.item_id = item_id;
+    }
+}
+
 
 export class PlaceWall extends LocationEvent {
     readonly kind = "place-wall";
@@ -83,6 +92,15 @@ export class SpawnMonster extends ActorEvent {
 
 export class SpawnPc extends ActorEvent {
     readonly kind = "spawn-pc";
+    readonly coordinates: Coordinates;
+    constructor(tick: number, id: string, coordinates: Coordinates) {
+        super(tick, id);
+        this.coordinates = coordinates;
+    }
+}
+
+export class PlaceSword extends ActorEvent {
+    readonly kind = "place-sword";
     readonly coordinates: Coordinates;
     constructor(tick: number, id: string, coordinates: Coordinates) {
         super(tick, id);

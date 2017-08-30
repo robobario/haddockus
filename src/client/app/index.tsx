@@ -1,5 +1,5 @@
 import { Engine } from "./engine";
-import { PlaceFloor, SpawnPc, RequestMove, Direction, PlaceWall, SpawnMonster, RequestWait } from "./event"
+import { PlaceFloor, SpawnPc, RequestMove, Direction, PlaceWall, SpawnMonster, RequestWait, PlaceSword } from "./event"
 import { View } from "./view"
 import { Coordinates } from "./grid";
 
@@ -25,6 +25,7 @@ let run_game = function() {
     let player_id = engine.get_player_character_id();
     engine.act(new SpawnPc(current_tick, player_id, new Coordinates(5, 5)));
     engine.act(new SpawnMonster(current_tick, engine.get_unique_actor_id(), new Coordinates(8, 3)));
+    engine.act(new PlaceSword(current_tick, engine.get_unique_actor_id(), new Coordinates(12, 8)));
     engine.process_events();
     let snapshot = engine.snapshot();
     view.render(snapshot);

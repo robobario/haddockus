@@ -1,7 +1,7 @@
 import { Grid, Cell } from "./grid"
 import { Character, HealthIndicator, Species } from "./character"
 import { Sprites } from "./sprites"
-import { any_match, iteritems } from "./lang"
+import { any_match, iteritems, map_uniq } from "./lang"
 import { Actor } from "./actor";
 import { Snapshot } from "./snapshot";
 
@@ -68,25 +68,33 @@ export class View {
                 this.draw_sprite(x, y, this.get_floor_sprite('floor', cell));
             }
 
-            any_match(cell.actors, (actor: Actor) => {
+            let is_corpse = any_match(cell.actors, (actor: Actor) => {
                 switch (actor.kind) {
                     case "character":
                         return !actor.is_alive();
                     default:
                         return false;
                 }
-            }, () => this.draw_sprite(x, y, "corpse"));
-
-            iteritems(cell.actors, (key: string, actor: Actor) => {
-                switch (actor.kind) {
-                    case "character":
-                        this.render_character(x, y, actor);
-                        break;
-                    case "wall":
-                        this.render_wall(x, y, actor);
-                        break;
-                }
             });
+
+            if (is_corpse) {
+                this.draw_sprite(x, y, "corpse");
+            } else {
+                const kinds = map_uniq(cell.actors, (key, actor) => actor.kind);
+                iteritems(cell.actors, (key: string, actor: Actor) => {
+                    switch (actor.kind) {
+                        case "sword":
+                            this.draw_sprite(x, y, actor.sprite);
+                            break;
+                        case "character":
+                            this.render_character(x, y, actor);
+                            break;
+                        case "wall":
+                            this.render_wall(x, y, actor);
+                            break;
+                    }
+                });
+            }
         })
     }
 

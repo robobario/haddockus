@@ -5,6 +5,8 @@ import { flatmap } from "./lang"
 import { Actor, BaseActor } from "./actor";
 import { Wall } from "./scenery";
 import { Species } from "./character";
+import { PlaceSword } from "./event";
+import { Sword } from "./item";
 
 export class World extends BaseActor {
     readonly kind = "world";
@@ -39,6 +41,11 @@ export class World extends BaseActor {
         this.add_actor(wall, event.coordinates.x, event.coordinates.y);
     }
 
+    private place_sword(event: PlaceSword) {
+        const sword = new Sword(this.get_unique_actor_id(), this.grid);
+        this.add_actor(sword, event.coordinates.x, event.coordinates.y);
+    }
+
     get_unique_actor_id() {
         return String(++this.id_sequence);
     }
@@ -49,6 +56,7 @@ export class World extends BaseActor {
 
     react(event: e.StateChangeEvent, tick: number): e.StateChangeEvent[] {
         switch (event.kind) {
+            case "place-sword": this.place_sword(event); break;
             case "place-wall": this.place_wall(event); break;
             case "place-floor": this.grid.get(event.coordinates.x, event.coordinates.y).set_floor(true); break;
             case "spawn-pc": this.spawn_pc(event); break;
@@ -75,4 +83,5 @@ export class World extends BaseActor {
     finish_move(move: e.FinishMove) {
         this.grid.move(move.actor_id, move.direction);
     }
+
 }

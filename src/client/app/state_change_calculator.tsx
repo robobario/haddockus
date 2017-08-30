@@ -7,6 +7,7 @@ export class StateChangeCalculator {
         const state_changes: e.StateChangeEvent[] = [];
         for (let event of input_events) {
             switch (event.kind) {
+                case "place-sword":
                 case "place-floor":
                 case "place-wall": state_changes.push(event); break;
                 case "spawn-pc": extend(state_changes, StateChangeCalculator.spawn_pc(event, tick)); break;
