@@ -9,6 +9,19 @@ export class View {
     private sprites: Sprites = new Sprites();
     private alternatives: any = require('./sprite-alternatives.json');
     private canvas: any = document.getElementById("canvas");
+    private internal_canvas: HTMLCanvasElement = document.createElement("canvas");
+    private internal_context: CanvasRenderingContext2D = View.create_internal(this.internal_canvas);
+
+    private static create_internal(element: HTMLCanvasElement): CanvasRenderingContext2D {
+        element.width = 1024;
+        element.height = 1024;
+        let context = element.getContext("2d");
+        if (context == null) {
+            throw Error("could not get a 2d context!");
+        }
+        return context;
+    }
+
     private context = this.canvas.getContext("2d");
     private sprite = new Image();
 
@@ -27,6 +40,7 @@ export class View {
         } else {
             this.renderDeath(snapshot);
         }
+        this.context.drawImage(this.internal_canvas, 0, 0);
     }
 
     private renderDeath(snapshot: Snapshot) {
@@ -39,13 +53,13 @@ export class View {
         let mid_y = Math.floor(snapshot.grid.height / 2);
         let mid_x = Math.floor(snapshot.grid.width / 2);
         let offset_y = 128 / 2;
-        this.context.fillStyle = '#000000';
+        this.internal_context.fillStyle = '#000000';
         let padding_y = 32;
-        this.context.fillRect(0, mid_y * 64 - offset_y - padding_y, 64 * snapshot.grid.width, 128 + 2 * padding_y);
-        this.context.textAlign = "center";
-        this.context.font = "128px Source Code Pro";
-        this.context.fillStyle = '#ffffff';
-        this.context.fillText("game over", mid_x * 64, mid_y * 64 + 32);
+        this.internal_context.fillRect(0, mid_y * 64 - offset_y - padding_y, 64 * snapshot.grid.width, 128 + 2 * padding_y);
+        this.internal_context.textAlign = "center";
+        this.internal_context.font = "128px Source Code Pro";
+        this.internal_context.fillStyle = '#ffffff';
+        this.internal_context.fillText("game over", mid_x * 64, mid_y * 64 + 32);
     }
 
     private renderMap(snapshot: Snapshot) {
@@ -94,12 +108,12 @@ export class View {
 
     draw_sprite(x: number, y: number, sprite: string) {
         const info = this.sprites.get_sprite_named(sprite);
-        this.context.drawImage(this.sprite, info.top_left_x, info.top_left_y, info.width, info.height, x * 64, y * 64, 64, 64);
+        this.internal_context.drawImage(this.sprite, info.top_left_x, info.top_left_y, info.width, info.height, x * 64, y * 64, 64, 64);
     }
 
     draw_random_sprite(x: number, y: number) {
         const info = this.sprites.get_random_sprite();
-        this.context.drawImage(this.sprite, info.top_left_x, info.top_left_y, info.width, info.height, x * 64, y * 64, 64, 64);
+        this.internal_context.drawImage(this.sprite, info.top_left_x, info.top_left_y, info.width, info.height, x * 64, y * 64, 64, 64);
     }
 
     get_sprite_name(alias: string, actor: Actor): string {

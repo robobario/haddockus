@@ -16,12 +16,16 @@ export class Sprite {
 
 export class Sprites {
     private sprites: { [s: string]: Sprite; } = {};
+    private keys: string[];
+    private length: number;
 
     constructor() {
         for (let frame of sprite_data['frames']) {
             const f = frame.frame;
             this.sprites[frame.filename] = new Sprite(-f.x, -f.y, f.w, f.h)
         }
+        this.keys = Object.keys(this.sprites);
+        this.length = this.keys.length;
     }
 
     public get_sprite_named(name: String): Sprite {
@@ -29,8 +33,7 @@ export class Sprites {
     }
 
     public get_random_sprite(): Sprite {
-        let keys = Object.keys(this.sprites);
-        return this.sprites[keys[Math.floor(Math.random() * keys.length)]]
+        return this.sprites[this.keys[Math.floor(Math.random() * this.length)]]
     }
 }
 
