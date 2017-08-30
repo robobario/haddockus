@@ -5,6 +5,13 @@ import { StateChangeCalculator } from "./state_change_calculator"
 import { World } from "./world"
 import { extend } from "./lang"
 import { StateChangeEvent, StartTick, TickEvent, EndTick } from "./event";
+import { Snapshot } from "./snapshot";
+
+export enum State {
+    RUNNING,
+    DECISION_REQUIRED,
+    PC_DEAD
+}
 
 export class Engine {
     private readonly input_events: e.InputEvent[] = [];
@@ -12,42 +19,70 @@ export class Engine {
     private tick: number = 0;
     private processedOffset: number = 0;
     private readonly world = new World();
+    private player_character_id: string = this.get_unique_actor_id();
+    private active: boolean = true;
 
     act(event: e.InputEvent) {
+        if (!this.active) {
+            console.log("Game over!")
+        }
         this.input_events.push(event);
         extend(this.events, StateChangeCalculator.calculate_state_changes([event], this.tick));
     }
 
     snapshot() {
-        return this.world.snapshot();
+        return new Snapshot(this.world.snapshot(), this.active);
     }
 
     get_unique_actor_id() {
         return this.world.get_unique_actor_id();
     }
 
-    run() {
-        let interrupt_pc = false;
-        while (interrupt_pc == false) {
+    get_player_character_id() {
+        return this.player_character_id;
+    }
+
+    run(): State {
+        if (!this.active) {
+            return State.PC_DEAD;
+        }
+        let interrupt_pc = State.RUNNING;
+
+        function max(tick_result: State, end_tick_result: State) {
+            if (tick_result == State.PC_DEAD || end_tick_result == State.PC_DEAD) {
+                return State.PC_DEAD;
+            } else if (tick_result == State.DECISION_REQUIRED || end_tick_result == State.DECISION_REQUIRED) {
+                return State.DECISION_REQUIRED;
+            }
+            return State.RUNNING;
+        }
+
+        while (interrupt_pc == State.RUNNING) {
             this.events.push(new StartTick(this.tick));
-            interrupt_pc = this.process_events();
+            let tick_result = this.process_events();
             this.events.push(new EndTick(this.tick));
-            interrupt_pc = interrupt_pc || this.process_events();
+            let end_tick_result = this.process_events();
+            interrupt_pc = max(tick_result, end_tick_result);
             if (!interrupt_pc) {
                 this.tick += 1;
             }
         }
+        if (interrupt_pc == State.PC_DEAD) {
+            this.active = false;
+        }
+        return interrupt_pc;
     }
 
-    process_events() {
-        let interrupt_pc = false;
+    process_events(): State {
+        let interrupt_pc = State.RUNNING;
         while (this.processedOffset < this.events.length) {
             const event: e.StateChangeEvent = this.events[this.processedOffset];
             console.log(event.kind);
             switch (event.kind) {
-                case "pc-decision": interrupt_pc = true;
-                default: this.apply_state_change(event);
+                case "pc-decision": interrupt_pc = State.DECISION_REQUIRED; break;
+                case "death": if (event.actor_id == this.get_player_character_id()) { interrupt_pc = State.PC_DEAD } break;
             }
+            this.apply_state_change(event);
             this.processedOffset += 1;
         }
         return interrupt_pc;

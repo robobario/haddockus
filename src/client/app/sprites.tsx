@@ -27,5 +27,10 @@ export class Sprites {
     public get_sprite_named(name: String): Sprite {
         return this.sprites[name + '.png']
     }
+
+    public get_random_sprite(): Sprite {
+        let keys = Object.keys(this.sprites);
+        return this.sprites[keys[Math.floor(Math.random() * keys.length)]]
+    }
 }
 

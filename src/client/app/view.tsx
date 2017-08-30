@@ -3,6 +3,7 @@ import { Character, Species } from "./character"
 import { Sprites } from "./sprites"
 import { any_match, iteritems } from "./lang"
 import { Actor } from "./actor";
+import { Snapshot } from "./snapshot";
 
 export class View {
     private sprites: Sprites = new Sprites();
@@ -20,23 +21,56 @@ export class View {
         }
     }
 
-    render(grid: Grid) {
-        grid.foreach((x, y, cell) => {
+    render(snapshot: Snapshot) {
+        if (snapshot.is_alive) {
+            this.renderMap(snapshot);
+        } else {
+            this.renderDeath(snapshot);
+        }
+    }
+
+    private renderDeath(snapshot: Snapshot) {
+        snapshot.grid.foreach((x, y, cell) => {
+            this.draw_random_sprite(x, y);
+            this.draw_random_sprite(x, y);
+            this.draw_random_sprite(x, y);
+            this.draw_random_sprite(x, y);
+        });
+        let mid_y = Math.floor(snapshot.grid.height / 2);
+        let mid_x = Math.floor(snapshot.grid.width / 2);
+        let offset_y = 128 / 2;
+        this.context.fillStyle = '#000000';
+        let padding_y = 32;
+        this.context.fillRect(0, mid_y * 64 - offset_y - padding_y, 64 * snapshot.grid.width, 128 + 2 * padding_y);
+        this.context.textAlign = "center";
+        this.context.font = "128px Source Code Pro";
+        this.context.fillStyle = '#ffffff';
+        this.context.fillText("game over", mid_x * 64, mid_y * 64 + 32);
+    }
+
+    private renderMap(snapshot: Snapshot) {
+        snapshot.grid.foreach((x, y, cell) => {
             if (cell.is_floor) {
                 this.draw_sprite(x, y, this.get_floor_sprite('floor', cell));
             }
 
             any_match(cell.actors, (actor: Actor) => {
                 switch (actor.kind) {
-                    case "character": return !actor.is_alive();
-                    default: return false;
+                    case "character":
+                        return !actor.is_alive();
+                    default:
+                        return false;
                 }
             }, () => this.draw_sprite(x, y, "corpse"));
 
             iteritems(cell.actors, (key: string, actor: Actor) => {
                 switch (actor.kind) {
-                    case "character": this.render_character(x, y, actor); break;
-                    case "wall": this.render_wall(x, y, actor); break;
+                    case "character":
+                        this.render_character(x, y, actor);
+                        break;
+                    case "wall":
+                        this.render_wall(x, y, actor);
+                        break;
                 }
             });
         })
@@ -60,6 +94,11 @@ export class View {
 
     draw_sprite(x: number, y: number, sprite: string) {
         const info = this.sprites.get_sprite_named(sprite);
+        this.context.drawImage(this.sprite, info.top_left_x, info.top_left_y, info.width, info.height, x * 64, y * 64, 64, 64);
+    }
+
+    draw_random_sprite(x: number, y: number) {
+        const info = this.sprites.get_random_sprite();
         this.context.drawImage(this.sprite, info.top_left_x, info.top_left_y, info.width, info.height, x * 64, y * 64, 64, 64);
     }
 
