@@ -1,5 +1,8 @@
 import { Engine } from "./engine";
-import { PlaceFloor, SpawnPc, RequestMove, Direction, PlaceWall, SpawnMonster, RequestWait, PlaceSword } from "./event"
+import {
+    PlaceFloor, SpawnPc, RequestMove, Direction, PlaceWall, SpawnMonster, RequestWait, PlaceSword,
+    PickupAll
+} from "./event"
 import { View } from "./view"
 import { Coordinates } from "./grid";
 
@@ -47,6 +50,9 @@ let run_game = function() {
                 break;
             case 190:
                 engine.act(new RequestWait(current_tick, player_id));
+                break;
+            case 188:
+                engine.act(new PickupAll(current_tick, player_id));
                 break;
             default:
                 return;

@@ -1,8 +1,8 @@
 import * as e from './event'
 import { extend, iteritems } from './lang'
-import { BaseActor } from "./actor";
+import { Actor, BaseActor } from "./actor";
 import { Coordinates, Grid } from "./grid";
-import { EndTick, StartMove, StateChangeEvent } from "./event";
+import { EndTick, Pickup, PickupAll, StartMove, StateChangeEvent } from "./event";
 
 const EMPTY: e.StateChangeEvent[] = [];
 export const enum Species {
@@ -28,6 +28,7 @@ export class Character extends BaseActor {
     private alive: boolean = true;
     private death_event: e.Death | null = null;
     readonly species: Species = Species.Human;
+    readonly actors: { [key: string]: Actor } = {};
 
     constructor(species: Species, actor_id: string, grid: Grid) {
         super(actor_id, grid);
@@ -76,6 +77,8 @@ export class Character extends BaseActor {
             case "melee": extend(reactions, this.resolve_incoming_melee(event)); break;
             case "damage": extend(reactions, this.resolve_damage(event)); break;
             case "death": extend(reactions, this.resolve_death(event)); break;
+            case "pickup-all": extend(reactions, this.pickup_all(event)); break;
+            case "pickup": extend(reactions, this.pickup(event)); break;
         }
         return reactions;
     }
@@ -143,6 +146,7 @@ export class Character extends BaseActor {
             return EMPTY
         }
         this.hp = this.hp - event.damage;
+        console.log(this.hp);
         return EMPTY;
     }
 
@@ -203,6 +207,36 @@ export class Character extends BaseActor {
         } else {
             return EMPTY;
         }
+    }
+
+    private pickup(event: Pickup): StateChangeEvent[] {
+        if (event.actor_id !== this.actor_id) {
+            return EMPTY;
+        }
+        let cell = this.grid.locate(this.actor_id);
+        let sword = cell.remove(event.item_id);
+        this.actors[sword.actor_id] = sword;
+        if (sword.kind == "sword") {
+            sword.owner_id = this.actor_id;
+        }
+        return EMPTY;
+    }
+
+    private pickup_all(event: PickupAll): StateChangeEvent[] {
+        if (event.actor_id !== this.actor_id) {
+            return EMPTY;
+        }
+        let cell = this.grid.locate(this.actor_id);
+        let actors = cell.actors;
+        for (let actor_id in actors) {
+            if (actors.hasOwnProperty(actor_id)) {
+                let act = actors[actor_id];
+                switch (act.kind) {
+                    case "sword": return [new Pickup(event.tick, this.actor_id, act.actor_id)];
+                }
+            }
+        }
+        return EMPTY;
     }
 }
 

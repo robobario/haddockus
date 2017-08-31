@@ -1,5 +1,5 @@
 import { BaseActor } from "./actor";
-import { StateChangeEvent } from "./event";
+import { Damage, Melee, StateChangeEvent } from "./event";
 import { Grid } from "./grid";
 
 const EMPTY: StateChangeEvent[] = [];
@@ -9,6 +9,16 @@ export abstract class Item extends BaseActor {
     owner_id: string | null = null;
 
     react(event: StateChangeEvent, tick: number): StateChangeEvent[] {
+        switch (event.kind) {
+            case "melee": return this.on_melee(event);
+        }
+        return EMPTY;
+    }
+
+    private on_melee(event: Melee): StateChangeEvent[] {
+        if (event.from_actor_id == this.owner_id) {
+            return [new Damage(5, event.to_actor_id, 5)];
+        }
         return EMPTY;
     }
 

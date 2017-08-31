@@ -9,6 +9,7 @@ export class StateChangeCalculator {
             switch (event.kind) {
                 case "place-sword":
                 case "place-floor":
+                case "pickup-all":
                 case "place-wall": state_changes.push(event); break;
                 case "spawn-pc": extend(state_changes, StateChangeCalculator.spawn_pc(event, tick)); break;
                 case "spawn-monster": extend(state_changes, StateChangeCalculator.spawn_monster(event, tick)); break;
