@@ -77,7 +77,7 @@ export class Character extends BaseActor {
             case "melee": extend(reactions, this.resolve_incoming_melee(event)); break;
             case "damage": extend(reactions, this.resolve_damage(event)); break;
             case "death": extend(reactions, this.resolve_death(event)); break;
-            case "pickup-all": extend(reactions, this.pickup_all(event)); break;
+            case "pickup-all": if (this.is_target_me(event)) { this.queue_action(event) } break;
             case "pickup": extend(reactions, this.pickup(event)); break;
         }
         return reactions;
@@ -192,6 +192,10 @@ export class Character extends BaseActor {
                     state_changes.push(new e.FinishWait(tick, this.actor_id));
                     this.actions.splice(i, 1);
                 } break;
+                case "pickup-all": if (tick - event.tick >= 16) {
+                    extend(state_changes, this.pickup_all(event, tick));
+                    this.actions.splice(i, 1);
+                } break;
             }
         }
         return state_changes;
@@ -222,7 +226,7 @@ export class Character extends BaseActor {
         return EMPTY;
     }
 
-    private pickup_all(event: PickupAll): StateChangeEvent[] {
+    private pickup_all(event: PickupAll, tick: number): StateChangeEvent[] {
         if (event.actor_id !== this.actor_id) {
             return EMPTY;
         }
@@ -232,7 +236,7 @@ export class Character extends BaseActor {
             if (actors.hasOwnProperty(actor_id)) {
                 let act = actors[actor_id];
                 switch (act.kind) {
-                    case "sword": return [new Pickup(event.tick, this.actor_id, act.actor_id)];
+                    case "sword": return [new Pickup(tick, this.actor_id, act.actor_id)];
                 }
             }
         }
