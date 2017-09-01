@@ -9,6 +9,9 @@ export class View {
     private sprites: Sprites = new Sprites();
     private alternatives: any = require('./sprite-alternatives.json');
     private canvas: any = document.getElementById("canvas");
+    private overlay: any = document.getElementById("overlay");
+    private overlay_context: CanvasRenderingContext2D = this.overlay.getContext("2d");
+    private overlay_visible: boolean = false;
     private internal_canvas: HTMLCanvasElement = document.createElement("canvas");
     private internal_context: CanvasRenderingContext2D = View.create_internal(this.internal_canvas);
 
@@ -167,6 +170,20 @@ export class View {
                     break;
             }
         });
+
+    }
+
+    toggle_console() {
+        this.overlay_visible = !this.overlay_visible;
+        if (this.overlay_visible) {
+            this.overlay_context.fillStyle = "rgba(0, 0, 0, 0.7)";
+            this.overlay_context.fillRect(0, 0, this.overlay.width, this.overlay.height);
+        } else {
+            this.overlay_context.clearRect(0, 0, this.overlay.width, this.overlay.height);
+        }
+    }
+
+    console_input(keydown: KeyboardEvent) {
 
     }
 }
