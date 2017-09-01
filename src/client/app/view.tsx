@@ -15,6 +15,7 @@ export class View {
     private internal_canvas: HTMLCanvasElement = document.createElement("canvas");
     private internal_context: CanvasRenderingContext2D = View.create_internal(this.internal_canvas);
     private overlay_buffer: string = " > ";
+    private commands: string[] = ["wield"];
 
     private static create_internal(element: HTMLCanvasElement): CanvasRenderingContext2D {
         element.width = 1024;
@@ -203,6 +204,16 @@ export class View {
             this.redraw_console();
         } else if (keydown.keyCode == 8) {
             this.overlay_buffer = this.overlay_buffer.substr(0, this.overlay_buffer.length - 1)
+            this.redraw_console();
+        } else if (keydown.keyCode == 9) {
+            keydown.preventDefault();
+            let current = this.overlay_buffer.substr(3).toLowerCase();
+            for (let c in this.commands) {
+                if (this.commands[c].indexOf(current) === 0) {
+                    this.overlay_buffer = " > " + this.commands[c];
+                    break;
+                }
+            }
             this.redraw_console();
         }
     }
