@@ -1,7 +1,7 @@
 import { Engine } from "./engine";
 import {
-    PlaceFloor, SpawnPc, RequestMove, Direction, PlaceWall, SpawnMonster, RequestWait, PlaceSword,
-    PickupAll, EnterLevel
+    PlaceFloor, SpawnPc, Direction, PlaceWall, SpawnMonster, PlaceSword,
+    PickupAll, EnterLevel, StartMove, StartWait
 } from "./event"
 import { View } from "./view"
 import { Coordinates } from "./grid";
@@ -21,19 +21,19 @@ let run_game = function() {
         let current_tick = engine.current_tick();
         switch (e.keyCode) {
             case 38:
-                engine.act(new RequestMove(current_tick, player_id, Direction.Up));
+                engine.act(new StartMove(current_tick, player_id, Direction.Up));
                 break;
             case 40:
-                engine.act(new RequestMove(current_tick, player_id, Direction.Down));
+                engine.act(new StartMove(current_tick, player_id, Direction.Down));
                 break;
             case 37:
-                engine.act(new RequestMove(current_tick, player_id, Direction.Left));
+                engine.act(new StartMove(current_tick, player_id, Direction.Left));
                 break;
             case 39:
-                engine.act(new RequestMove(current_tick, player_id, Direction.Right));
+                engine.act(new StartMove(current_tick, player_id, Direction.Right));
                 break;
             case 190:
-                engine.act(new RequestWait(current_tick, player_id));
+                engine.act(new StartWait(current_tick, player_id));
                 break;
             case 188:
                 engine.act(new PickupAll(current_tick, player_id));

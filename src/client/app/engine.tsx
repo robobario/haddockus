@@ -1,7 +1,6 @@
 import { Grid, Cell } from "./grid"
 import * as e from "./event"
 import * as a from "./character"
-import { StateChangeCalculator } from "./state_change_calculator"
 import { World } from "./world"
 import { extend } from "./lang"
 import { StateChangeEvent, StartTick, TickEvent, EndTick } from "./event";
@@ -14,7 +13,6 @@ export enum State {
 }
 
 export class Engine {
-    private readonly input_events: e.InputEvent[] = [];
     private readonly events: e.StateChangeEvent[] = [];
     private tick: number = 0;
     private processedOffset: number = 0;
@@ -26,8 +24,7 @@ export class Engine {
         if (!this.active) {
             console.log("Game over!")
         }
-        this.input_events.push(event);
-        extend(this.events, StateChangeCalculator.calculate_state_changes([event], this.tick));
+        this.events.push(event);
     }
 
     snapshot() {
@@ -63,7 +60,7 @@ export class Engine {
             this.events.push(new EndTick(this.tick));
             let end_tick_result = this.process_events();
             interrupt_pc = max(tick_result, end_tick_result);
-            if (!interrupt_pc) {
+            if (interrupt_pc == State.RUNNING) {
                 this.tick += 1;
             }
         }

@@ -18,9 +18,9 @@ export function opposite_direction(d: Direction): Direction {
     }
 }
 
-export type InputEvent = EnterLevel | PlaceSword | PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | RequestMove | RequestWait | PickupAll
+export type InputEvent = EnterLevel | PickupAll | StartWait | StartMove
 
-export type StateChangeEvent = EnterLevel | StartTick | EndTick | Pickup | PickupAll | PlaceSword | PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | PcDecision | NpcDecision | StartMove | FinishMove | Negate | InitiateCombat | Melee | Damage | Death | StartWait | FinishWait
+export type StateChangeEvent = InputEvent | EnterLevel | StartTick | EndTick | Pickup | PickupAll | PlaceSword | PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | PcDecision | NpcDecision | StartMove | FinishMove | Negate | InitiateCombat | Melee | Damage | Death | StartWait | FinishWait
 
 export abstract class TickEvent {
     readonly tick: number;
@@ -157,19 +157,6 @@ export class Negate extends TickEvent {
     constructor(event_to_negate: StateChangeEvent) {
         super(event_to_negate.tick);
         this.event_to_negate = event_to_negate;
-    }
-}
-
-export class RequestWait extends ActorEvent {
-    readonly kind = "request-wait";
-}
-
-export class RequestMove extends ActorEvent {
-    readonly kind = "request-move";
-    readonly direction: Direction;
-    constructor(tick: number, actor_id: string, direction: Direction) {
-        super(tick, actor_id);
-        this.direction = direction;
     }
 }
 
