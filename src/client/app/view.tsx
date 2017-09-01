@@ -14,6 +14,7 @@ export class View {
     private overlay_visible: boolean = false;
     private internal_canvas: HTMLCanvasElement = document.createElement("canvas");
     private internal_context: CanvasRenderingContext2D = View.create_internal(this.internal_canvas);
+    private overlay_buffer: string = " > ";
 
     private static create_internal(element: HTMLCanvasElement): CanvasRenderingContext2D {
         element.width = 1024;
@@ -176,14 +177,46 @@ export class View {
     toggle_console() {
         this.overlay_visible = !this.overlay_visible;
         if (this.overlay_visible) {
-            this.overlay_context.fillStyle = "rgba(0, 0, 0, 0.7)";
-            this.overlay_context.fillRect(0, 0, this.overlay.width, this.overlay.height);
+            this.redraw_console();
         } else {
-            this.overlay_context.clearRect(0, 0, this.overlay.width, this.overlay.height);
+            this.clear_overlay();
         }
     }
 
-    console_input(keydown: KeyboardEvent) {
+    private clear_overlay() {
+        this.overlay_context.clearRect(0, 0, this.overlay.width, this.overlay.height);
+    }
 
+    private draw_overlay() {
+        this.overlay_context.fillStyle = "rgba(0, 0, 0, 0.7)";
+        this.overlay_context.fillRect(0, 0, this.overlay.width, this.overlay.height);
+    }
+
+    console_input(keydown: KeyboardEvent) {
+        if (keydown.keyCode >= 48 && keydown.keyCode <= 90) {
+            if (this.overlay_buffer.length < 16) {
+                this.overlay_buffer = this.overlay_buffer + keydown.key;
+                this.redraw_buffer();
+            }
+        } else if (keydown.keyCode == 13) {
+            this.overlay_buffer = " > ";
+            this.redraw_console();
+        } else if (keydown.keyCode == 8) {
+            this.overlay_buffer = this.overlay_buffer.substr(0, this.overlay_buffer.length - 1)
+            this.redraw_console();
+        }
+    }
+
+    private redraw_console() {
+        this.clear_overlay();
+        this.draw_overlay();
+        this.redraw_buffer();
+    }
+
+    private redraw_buffer() {
+        this.overlay_context.font = "64px Source Code Pro";
+        this.overlay_context.textBaseline = "hanging";
+        this.overlay_context.fillStyle = "#ffffff";
+        this.overlay_context.fillText(this.overlay_buffer, 0, 64 * 15, this.overlay.width)
     }
 }
