@@ -2,7 +2,7 @@ import * as e from './event'
 import { extend, iteritems } from './lang'
 import { Actor, BaseActor } from "./actor";
 import { Coordinates, Grid } from "./grid";
-import { EndTick, Pickup, PickupAll, StartMove, StateChangeEvent } from "./event";
+import { Damage, EndTick, Pickup, PickupAll, StartMove, StateChangeEvent } from "./event";
 import { Engine } from "./engine";
 
 const EMPTY: e.StateChangeEvent[] = [];
@@ -80,6 +80,8 @@ export class Character extends BaseActor {
             case "death": extend(reactions, this.resolve_death(event)); break;
             case "pickup-all": if (this.is_target_me(event)) { this.queue_action(event) } break;
             case "pickup": extend(reactions, this.pickup(event)); break;
+            case "start-wait": if (this.is_target_me(event)) { this.queue_action(event) } break;
+            case "finish-wait": if (this.is_target_me(event)) { this.hp = this.hp + 1 } break;
         }
         return reactions;
     }
