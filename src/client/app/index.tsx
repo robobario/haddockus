@@ -1,7 +1,7 @@
 import { Engine } from "./engine";
 import {
     PlaceFloor, SpawnPc, RequestMove, Direction, PlaceWall, SpawnMonster, RequestWait, PlaceSword,
-    PickupAll
+    PickupAll, EnterLevel
 } from "./event"
 import { View } from "./view"
 import { Coordinates } from "./grid";
@@ -10,26 +10,10 @@ const view = new View();
 
 let run_game = function() {
     const engine = new Engine();
-    let snap = engine.snapshot().grid;
     let current_tick = engine.current_tick();
-    for (let _x = 0; _x < snap.width; _x++) {
-        for (let _y = 0; _y < snap.height; _y++) {
-            engine.act(new PlaceFloor(current_tick, new Coordinates(_x, _y)));
-        }
-    }
-    for (let _x = 0; _x < snap.width; _x++) {
-        engine.act(new PlaceWall(current_tick, new Coordinates(_x, 0)));
-        engine.act(new PlaceWall(current_tick, new Coordinates(_x, snap.height - 1)));
-    }
-    for (let _y = 1; _y < snap.height - 1; _y++) {
-        engine.act(new PlaceWall(current_tick, new Coordinates(0, _y)));
-        engine.act(new PlaceWall(current_tick, new Coordinates(snap.width - 1, _y)));
-    }
     let player_id = engine.get_player_character_id();
-    engine.act(new SpawnPc(current_tick, player_id, new Coordinates(5, 5)));
-    engine.act(new SpawnMonster(current_tick, engine.get_unique_actor_id(), new Coordinates(8, 3)));
-    engine.act(new PlaceSword(current_tick, engine.get_unique_actor_id(), new Coordinates(12, 8)));
-    engine.process_events();
+    engine.act(new EnterLevel(current_tick, player_id));
+    engine.run();
     let snapshot = engine.snapshot();
     view.render(snapshot);
     console.log("make a decision now!");

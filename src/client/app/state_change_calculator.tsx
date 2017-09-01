@@ -10,6 +10,7 @@ export class StateChangeCalculator {
                 case "place-sword":
                 case "place-floor":
                 case "pickup-all":
+                case "enter-level":
                 case "place-wall": state_changes.push(event); break;
                 case "spawn-pc": extend(state_changes, StateChangeCalculator.spawn_pc(event, tick)); break;
                 case "spawn-monster": extend(state_changes, StateChangeCalculator.spawn_monster(event, tick)); break;

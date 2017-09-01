@@ -7,14 +7,18 @@ import { Wall } from "./scenery";
 import { Species } from "./character";
 import { PlaceSword } from "./event";
 import { Sword } from "./item";
+import { Engine } from "./engine";
+import { DungeonMaster } from "./dungeon_master";
 
 export class World extends BaseActor {
     readonly kind = "world";
     private actors: { [key: string]: Actor } = {};
     private id_sequence: number = 0;
 
-    constructor() {
-        super(String(0), new Grid(16, 16));
+    constructor(engine: Engine) {
+        super(String(0), new Grid(16, 16), engine);
+        let uniqueActorId = this.get_unique_actor_id();
+        this.actors[uniqueActorId] = new DungeonMaster(uniqueActorId, this.grid, this.engine);
     }
 
     private actor(id: string) {
@@ -27,22 +31,22 @@ export class World extends BaseActor {
     }
 
     private spawn_monster(event: e.SpawnMonster) {
-        const monster = new a.Character(Species.Goblin, event.actor_id, this.grid);
+        const monster = new a.Character(Species.Goblin, event.actor_id, this.grid, this.engine);
         this.add_actor(monster, event.coordinates.x, event.coordinates.y);
     }
 
     private spawn_pc(event: e.SpawnPc) {
-        const pc = new a.Character(Species.Human, event.actor_id, this.grid);
+        const pc = new a.Character(Species.Human, event.actor_id, this.grid, this.engine);
         this.add_actor(pc, event.coordinates.x, event.coordinates.y);
     }
 
     private place_wall(event: e.PlaceWall) {
-        const wall = new Wall(this.get_unique_actor_id(), this.grid);
+        const wall = new Wall(this.get_unique_actor_id(), this.grid, this.engine);
         this.add_actor(wall, event.coordinates.x, event.coordinates.y);
     }
 
     private place_sword(event: PlaceSword) {
-        const sword = new Sword(this.get_unique_actor_id(), this.grid);
+        const sword = new Sword(this.get_unique_actor_id(), this.grid, this.engine);
         this.add_actor(sword, event.coordinates.x, event.coordinates.y);
     }
 

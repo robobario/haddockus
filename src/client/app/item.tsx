@@ -1,6 +1,7 @@
 import { BaseActor } from "./actor";
 import { Damage, Melee, StateChangeEvent } from "./event";
 import { Grid } from "./grid";
+import { Engine } from "./engine";
 
 const EMPTY: StateChangeEvent[] = [];
 export abstract class Item extends BaseActor {
@@ -22,8 +23,8 @@ export abstract class Item extends BaseActor {
         return EMPTY;
     }
 
-    constructor(actor_id: string, grid: Grid) {
-        super(actor_id, grid);
+    constructor(actor_id: string, grid: Grid, engine: Engine) {
+        super(actor_id, grid, engine);
     }
 }
 

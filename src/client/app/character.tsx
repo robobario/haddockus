@@ -3,6 +3,7 @@ import { extend, iteritems } from './lang'
 import { Actor, BaseActor } from "./actor";
 import { Coordinates, Grid } from "./grid";
 import { EndTick, Pickup, PickupAll, StartMove, StateChangeEvent } from "./event";
+import { Engine } from "./engine";
 
 const EMPTY: e.StateChangeEvent[] = [];
 export const enum Species {
@@ -30,8 +31,8 @@ export class Character extends BaseActor {
     readonly species: Species = Species.Human;
     readonly actors: { [key: string]: Actor } = {};
 
-    constructor(species: Species, actor_id: string, grid: Grid) {
-        super(actor_id, grid);
+    constructor(species: Species, actor_id: string, grid: Grid, engine: Engine) {
+        super(actor_id, grid, engine);
         this.species = species;
     }
 

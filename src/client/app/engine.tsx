@@ -18,7 +18,7 @@ export class Engine {
     private readonly events: e.StateChangeEvent[] = [];
     private tick: number = 0;
     private processedOffset: number = 0;
-    private readonly world = new World();
+    private readonly world = new World(this);
     private player_character_id: string = this.get_unique_actor_id();
     private active: boolean = true;
 

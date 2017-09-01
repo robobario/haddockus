@@ -18,9 +18,9 @@ export function opposite_direction(d: Direction): Direction {
     }
 }
 
-export type InputEvent = PlaceSword | PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | RequestMove | RequestWait | PickupAll
+export type InputEvent = EnterLevel | PlaceSword | PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | RequestMove | RequestWait | PickupAll
 
-export type StateChangeEvent = StartTick | EndTick | Pickup | PickupAll | PlaceSword | PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | PcDecision | NpcDecision | StartMove | FinishMove | Negate | InitiateCombat | Melee | Damage | Death | StartWait | FinishWait
+export type StateChangeEvent = EnterLevel | StartTick | EndTick | Pickup | PickupAll | PlaceSword | PlaceWall | PlaceFloor | SpawnPc | SpawnMonster | PcDecision | NpcDecision | StartMove | FinishMove | Negate | InitiateCombat | Melee | Damage | Death | StartWait | FinishWait
 
 export abstract class TickEvent {
     readonly tick: number;
@@ -36,6 +36,7 @@ export class StartTick extends TickEvent {
 export class EndTick extends TickEvent {
     readonly kind = "end-tick";
 }
+
 
 export abstract class OneWayInteraction extends TickEvent {
     readonly from_actor_id: string;
@@ -61,6 +62,10 @@ export class LocationEvent extends TickEvent {
         super(tick);
         this.coordinates = coordinates;
     }
+}
+
+export class EnterLevel extends ActorEvent {
+    readonly kind = "enter-level";
 }
 
 export class Pickup extends ActorEvent {
